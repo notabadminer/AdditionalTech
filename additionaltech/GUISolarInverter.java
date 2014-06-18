@@ -1,4 +1,4 @@
-package additionaltech_solar;
+package additionaltech;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -34,7 +34,7 @@ public class GUISolarInverter extends GuiContainer {
 	@Override
 	public void initGui() {
 		super.initGui();
-		resetButton = new GuiButton(idResetButton, 135 + (width - xSize) / 2, 100 + (height - ySize) / 2, 35, 11, "Reset");
+		resetButton = new GuiButton(idResetButton, 135 + (width - xSize) / 2, 104 + (height - ySize) / 2, 35, 11, "Reset");
 		buttonList.clear();
 		buttonList.add(resetButton);
 	}
@@ -45,8 +45,9 @@ public class GUISolarInverter extends GuiContainer {
 		// the parameters for drawString are: string, x, y, color
 		fontRendererObj.drawString("Solar Inverter", 6, 5, 4210752);
 		fontRendererObj.drawString("Panels Connected: " + tileEntity.panelCount, 18, 26, 4210752);
-		fontRendererObj.drawString("Energy Generated: " + tileEntity.energyGenerated, 18, 39, 4210752);
-		fontRendererObj.drawString("Energy Stored: " + tileEntity.energy, 18, 52, 4210752);
+		fontRendererObj.drawString("Max Panels:  " + tileEntity.panelMax, 18, 39, 4210752);
+		fontRendererObj.drawString("Energy Generated: " + tileEntity.energyGenerated, 18, 52, 4210752);
+		fontRendererObj.drawString("Energy Stored: " + Math.round(tileEntity.energy), 18, 65, 4210752);
 		// draws "Inventory" or your regional equivalent
 		fontRendererObj.drawString(
 				StatCollector.translateToLocal("container.inventory"), 6,
@@ -58,7 +59,7 @@ public class GUISolarInverter extends GuiContainer {
 			int par3) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		
-		final ResourceLocation texture = new ResourceLocation("additionaltech_solar", "textures/gui/solarinverter.png");
+		final ResourceLocation texture = new ResourceLocation("additionaltech", "textures/gui/solarinverter.png");
 		Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
 
 		int guiWidth = (width - xSize) / 2;
@@ -68,7 +69,8 @@ public class GUISolarInverter extends GuiContainer {
 	
 	protected void actionPerformed(GuiButton par1GuiButton) {
 		if (par1GuiButton.id == idResetButton) {
-			tileEntity.scanArea();
+			tileEntity.onResetButtonPressed();
 		}
+		tileEntity.sendPacket(par1GuiButton.id);
 	}
 }

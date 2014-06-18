@@ -1,4 +1,4 @@
-package additionaltech_solar.net;
+package additionaltech.net;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
@@ -129,13 +129,14 @@ public class PacketPipeline extends MessageToMessageCodec<FMLProxyPacket, Abstra
     // Method to call from FMLInitializationEvent
     public void initalise ()
     {
-        this.channels = NetworkRegistry.INSTANCE.newChannel("UniversalCoins", this);
+        this.channels = NetworkRegistry.INSTANCE.newChannel("additionaltech", this);
         registerPackets();
     }
 
     public void registerPackets ()
     {
         registerPacket(PacketSolarInverter.class);
+        registerPacket(PacketSolarInverterTE.class);
     }
 
     // Method to call from FMLPostInitializationEvent

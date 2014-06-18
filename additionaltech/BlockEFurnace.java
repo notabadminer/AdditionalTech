@@ -1,8 +1,5 @@
-package additionaltech_solar;
+package additionaltech;
 
-import cpw.mods.fml.common.FMLLog;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.MapColor;
@@ -15,30 +12,30 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
+import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockSolarInverter extends BlockContainer {
-
+public class BlockEFurnace extends BlockContainer{
 	@SideOnly(Side.CLIENT)
 	protected IIcon blockIcon;
 	protected IIcon blockIconFace;
 
-	public BlockSolarInverter() {
+	public BlockEFurnace() {
 		super(new Material(MapColor.stoneColor));
 		setStepSound(Block.soundTypeMetal);
 		setHardness(5.0F);
-		setBlockTextureName("additionaltech_solar:SolarInverterFace");
-		setCreativeTab(CreativeTabs.tabMisc);
+		setBlockTextureName("additionaltech:EFurnaceFace");
+		setCreativeTab(AdditionalTech.tabAdditionalTech);
 		setHarvestLevel("pickaxe", 1);
 	}
 	
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(IIconRegister par1IconRegister) {
-		blockIcon = par1IconRegister.registerIcon("additionaltech_solar:SolarInverter");
-		blockIconFace = par1IconRegister.registerIcon("additionaltech_solar:SolarInverterFace");
+		blockIcon = par1IconRegister.registerIcon("additionaltech:Casing");
+		blockIconFace = par1IconRegister.registerIcon("additionaltech:EFurnaceFace");
 	}
 	
 	@Override
@@ -83,10 +80,10 @@ public class BlockSolarInverter extends BlockContainer {
 		player.openGui(AdditionalTech.instance, 0, world, x, y, z);
 		return true;
     }
-
+	
 	@Override
 	public TileEntity createNewTileEntity(World var1, int var2) {
-		return new TileSolarInverter();
+		return new TileEFurnace();
 	}
 	
 	@Override
@@ -94,3 +91,4 @@ public class BlockSolarInverter extends BlockContainer {
 		super.breakBlock(world, x, y, z, block, meta);
 	}
 }
+

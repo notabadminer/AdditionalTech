@@ -1,4 +1,4 @@
-package additionaltech_solar.net;import io.netty.buffer.ByteBuf;
+package additionaltech.net;import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
 import net.minecraft.entity.player.EntityPlayer;

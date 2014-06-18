@@ -1,4 +1,4 @@
-package additionaltech_solar;
+package additionaltech;
 
 import java.util.EnumSet;
 import java.util.LinkedList;
@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import cpw.mods.fml.common.FMLLog;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -15,6 +16,8 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.ForgeDirection;
+import additionaltech.net.PacketSolarInverter;
+import additionaltech.net.PacketSolarInverterTE;
 import buildcraft.api.power.IPowerEmitter;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerHandler.PowerReceiver;
@@ -22,10 +25,14 @@ import buildcraft.api.power.PowerHandler.Type;
 import buildcraft.api.transport.IPipeConnection;
 import buildcraft.api.transport.IPipeTile.PipeType;
 
-public class TileSolarInverter extends TileEntity implements IPowerEmitter,
-		IPipeConnection, IInventory {
+public class TileSolarInverter extends TileEntity implements IPowerEmitter, IPipeConnection, IInventory {
 
-	private ItemStack[] inv = new ItemStack[3];
+	private ItemStack[] inventory;
+	private final int invSize = 3;
+	public static final int upgradeSlot0 = 0;
+	public static final int upgradeSlot1 = 1;
+	public static final int upgradeSlot2 = 2;
+
 	public double energy = 0;
 	public double energyGenerated;
 	public double maxTransfer = 40;
@@ -33,15 +40,23 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter,
 	ForgeDirection orientation = ForgeDirection.UP;
 	public ForgeDirection powerReceiverDirection = null;
 	public int panelCount = 0;
+	public int panelMax = 9;
+	
+	public TileSolarInverter() {
+		super();
+		inventory = new ItemStack[invSize];
+	}
 
 	public void updateEntity() {
 		super.updateEntity();
-		if (panelCount == 0) {
-			scanArea();
-		}
 		generatePower();
-		 sendPower();
+		sendPower();
 	}
+	
+	public void onResetButtonPressed() {
+		scanArea();
+		sendTEPacket(panelCount, panelMax, energy, energyGenerated);
+		}
 		
 	public void scanArea() {
 		
@@ -52,20 +67,20 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter,
 		int xOffset = 0;
 		boolean xNegResult = false;
 		boolean xPosResult = false;
-
+		
 		// scan along x axis for solarpanels
 		while (xOffset <= 20) {
-			xNegResult = (checkSolarPanel(xCoord - xOffset, yCoord, zCoord));
+			int startCount = panelCount;
+			xNegResult = checkSolarPanel(xCoord - xOffset, yCoord, zCoord);
+			//FMLLog.info("Scanning xOffset: " + xOffset);
 			zScan(xCoord - xOffset, yCoord, zCoord);
-			xPosResult = (checkSolarPanel(xCoord + xOffset, yCoord, zCoord));
-			zScan(xCoord - xOffset, yCoord, zCoord);
+			xPosResult = checkSolarPanel(xCoord + xOffset, yCoord, zCoord);
+			zScan(xCoord + xOffset, yCoord, zCoord);
 			// kill the scan if we are not finding anything next to the inverter
-			if (panelCount == 0 && xOffset >= 1) {
+			if (panelCount == 0 && xOffset > 0) {
 				return;
 			}
-			if (xOffset < 1 || xNegResult || xPosResult) {
 				xOffset++;
-			} else return;
 		}
 	}
 	
@@ -76,6 +91,7 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter,
 		boolean zPosResult = false;
 
 		while (zOffset <= 20) {
+			//FMLLog.info("Scanning zOffset: " + zOffset);
 			zNegResult = (checkSolarPanel(xPOS, yPOS, zPOS - zOffset));
 			zPosResult = (checkSolarPanel(xPOS, yPOS, zPOS + zOffset));
 				
@@ -92,11 +108,12 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter,
 				worldObj.setBlockMetadataWithNotify(xPOS, yPOS, zPOS, 1, 2);
 			}
 			int blockMeta = worldObj.getBlockMetadata(xPOS, yPOS, zPOS);
-			if (blockMeta == 0) {
+			if (blockMeta == 0 && panelCount < panelMax) {
 				panelCount++;
+				//FMLLog.info("Found another solar panel. Count: " + panelCount);
 				worldObj.setBlockMetadataWithNotify(xPOS, yPOS, zPOS, 1, 2);
-				return true;
 			}
+			return true;
 		}
 		return false;
 	}
@@ -112,6 +129,26 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter,
 		}
 	}
 	
+	public void checkUpgrades() {
+		//reset panalMax to default
+		panelMax = 9;
+		if (!worldObj.isRemote) {
+			for (int i = 0; i < inventory.length; i++) {
+				ItemStack stack = inventory[i];
+				if (stack != null) {
+					if (stack.getItem() == AdditionalTech.itemInverterCore) {
+						panelMax += 9;
+					} else if (stack.getItem() == AdditionalTech.itemStageTwoCore) {
+						panelMax += 24;
+					} else if (stack.getItem() == AdditionalTech.itemStageThreeCore) {
+						panelMax += 50;
+					}
+				}
+			}
+			FMLLog.info("AT: Max panels changed to: " + panelMax);
+		}
+	}
+	
 	public boolean isWoodenConductivePipe(TileEntity tile, ForgeDirection direction) {
 		if (tile instanceof IPowerReceptor && ((IPowerReceptor) tile).getPowerReceiver(direction.getOpposite()) != null) {
 			return true;
@@ -121,13 +158,14 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter,
 
 	public void generatePower() {
 		if (!worldObj.isRemote && worldObj.isDaytime() && (!worldObj.isRaining() && !worldObj.isThundering())) {		
-			energyGenerated = panelCount * 0.5;
-			energy += energyGenerated;
-			if (energy > maxEnergy) {
-				energy = maxEnergy;
+			energyGenerated = panelCount * 0.25;
+			if (energy + energyGenerated > maxEnergy) {
+				energyGenerated = maxEnergy - energy;
+				energy += energyGenerated;
 			}
-			else energyGenerated = 0;
+			else energy += energyGenerated;
 		}
+		else energyGenerated = 0;
 	}
 	
 	public void sendPower() {
@@ -144,8 +182,7 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter,
 				PowerReceiver receiver = ((IPowerReceptor) tile)
 						.getPowerReceiver(powerReceiverDirection.getOpposite());
 				double send = Math.min(energy, maxTransfer);
-				if (send > 0)
-				{
+				if (send > 0) {
 					double b = receiver.receiveEnergy(Type.ENGINE,
 							Math.min(send, receiver.powerRequest()),
 							powerReceiverDirection.getOpposite());
@@ -153,9 +190,9 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter,
 						energy -= b;
 						b = 0;
 					}
-				}
-
+				}				
 			}
+			sendTEPacket(panelCount, panelMax, energy, energyGenerated);
 		}
 	}
 
@@ -189,14 +226,19 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter,
 		for (int i = 0; i < tagList.tagCount(); i++) {
 			NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
 			byte slot = tag.getByte("Slot");
-			if (slot >= 0 && slot < inv.length) {
-				inv[slot] = ItemStack.loadItemStackFromNBT(tag);
+			if (slot >= 0 && slot < inventory.length) {
+				inventory[slot] = ItemStack.loadItemStackFromNBT(tag);
 			}
 		}
 		try {
 			panelCount = tagCompound.getInteger("SolarPanels");
 		} catch (Throwable ex2) {
 			panelCount = 0;
+		}
+		try {
+			panelMax = tagCompound.getInteger("MaxSolarPanels");
+		} catch (Throwable ex2) {
+			panelMax = 9;
 		}
 		try {
 			energy = tagCompound.getInteger("EnergyLevel");
@@ -209,8 +251,8 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter,
 	public void writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		NBTTagList itemList = new NBTTagList();
-		for (int i = 0; i < inv.length; i++) {
-			ItemStack stack = inv[i];
+		for (int i = 0; i < inventory.length; i++) {
+			ItemStack stack = inventory[i];
 			if (stack != null) {
 				NBTTagCompound tag = new NBTTagCompound();
 				tag.setByte("Slot", (byte) i);
@@ -218,7 +260,9 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter,
 				itemList.appendTag(tag);
 			}
 		}
+		tagCompound.setTag("Inventory", itemList);
 		tagCompound.setInteger("SolarPanels", panelCount);
+		tagCompound.setInteger("MaxSolarPanels", panelMax);
 		tagCompound.setDouble("EnergyLevel", energy);
 	}
 
@@ -236,21 +280,33 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter,
 		this.writeToNBT(tag);
 		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tag);
 	}
+	
+	public void sendPacket(int button) {
+		PacketSolarInverter packet = new PacketSolarInverter(xCoord, yCoord,
+				zCoord, button);
+		AdditionalTech.packetPipeline.sendToServer(packet);
+	}
+	
+	public void sendTEPacket(int panelCount, int panelMax, double energy, double energyGenerated) {
+		PacketSolarInverterTE packet = new PacketSolarInverterTE(xCoord, yCoord, zCoord, panelCount, panelMax, energy, energyGenerated);
+		AdditionalTech.packetPipeline.sendToAll(packet);
+	}
 
 	@Override
 	public int getSizeInventory() {
-		return inv.length;
+		return inventory.length;
 	}
 
 	@Override
 	public ItemStack getStackInSlot(int slot) {
-		return inv[slot];
+		return inventory[slot];
 	}
 
 	@Override
 	public ItemStack decrStackSize(int slot, int amt) {
 		ItemStack stack = getStackInSlot(slot);
 		if (stack != null) {
+			checkUpgrades();
 			if (stack.stackSize <= amt) {
 				setInventorySlotContents(slot, null);
 			} else {
@@ -271,17 +327,17 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter,
 
 	@Override
 	public void setInventorySlotContents(int slot, ItemStack stack) {
-		inv[slot] = stack;
+		inventory[slot] = stack;
 		if (stack != null && stack.stackSize > getInventoryStackLimit()) {
 			stack.stackSize = getInventoryStackLimit();
 		}
-
+		//we need to adjust the panel max since the upgrade slot inventory has changed
+		checkUpgrades();
 	}
 
 	@Override
 	public String getInventoryName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "Solar Inverter";
 	}
 
 	@Override
@@ -308,8 +364,12 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter,
 
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack stack) {
-		// TODO Auto-generated method stub
-		return false;
+		Item stackItem = stack.getItem();
+		if (slot == upgradeSlot0 || slot == upgradeSlot1 || slot == upgradeSlot2) {
+			return stackItem == AdditionalTech.itemInverterCore
+					|| stackItem == AdditionalTech.itemStageTwoCore
+					|| stackItem == AdditionalTech.itemStageThreeCore;
+		} else return false;
 	}
 
 }

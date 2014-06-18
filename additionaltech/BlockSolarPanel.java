@@ -1,5 +1,6 @@
-package additionaltech_solar;
+package additionaltech;
 
+import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
@@ -8,6 +9,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.World;
 
 public class BlockSolarPanel extends Block {
 
@@ -20,17 +22,17 @@ public class BlockSolarPanel extends Block {
 		setStepSound(Block.soundTypeMetal);
 		setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.2F, 1.0F);
 		setHardness(5.0F);
-		setBlockTextureName("additionaltech_solar:SolarPanelTop");
+		setBlockTextureName("additionaltech:SolarPanelTop");
 		setLightOpacity(0);
-		setCreativeTab(CreativeTabs.tabMisc);
+		setCreativeTab(AdditionalTech.tabAdditionalTech);
 		setHarvestLevel("pickaxe", 1);
 	}
 
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerBlockIcons(IIconRegister par1IconRegister) {
-		blockIcon = par1IconRegister.registerIcon("additionaltech_solar:SolarPanel");
-		blockIconTop = par1IconRegister.registerIcon("additionaltech_solar:SolarPanelTop");
+		blockIcon = par1IconRegister.registerIcon("additionaltech:Casing");
+		blockIconTop = par1IconRegister.registerIcon("additionaltech:SolarPanelTop");
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -47,6 +49,15 @@ public class BlockSolarPanel extends Block {
 	@Override
 	public boolean isOpaqueCube() {
 		return false;
+	}
+	
+	/* Updating */
+    @Override
+    public void onNeighborBlockChange (World world, int x, int y, int z, Block block){
+    	if (block instanceof BlockSolarPanel || block instanceof BlockSolarInverter){
+    		//FMLLog.info("Additional Tech: block break detected. Resetting meta.");
+    		world.setBlockMetadataWithNotify(x, y, z, 0, 3);
+    	}
 	}
 
 

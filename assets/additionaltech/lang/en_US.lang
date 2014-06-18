@@ -1,0 +1,10 @@
+tile.blockSolarPanel.name=Solar Panel
+tile.blockSolarInverter.name=Solar Inverter
+tile.blockEFurnace.name=Energized Furnace
+tile.oreCopper.name=Copper Ore
+item.ingotCopper.name=Copper Ingot
+item.wireCopper.name=Copper Wire
+item.itemInverterCore.name=Inverter Core
+item.itemStageTwoCore.name=Stage Two Core
+item.itemStageThreeCore.name=Stage Three Core
+itemGroup.tabAdditionalTech=Additional Tech
