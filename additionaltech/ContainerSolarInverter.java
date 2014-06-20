@@ -1,14 +1,22 @@
 package additionaltech;
 
+import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 
 class ContainerSolarInverter extends Container {
 	private TileSolarInverter tileEntity;
+	int lastPanelCount;
+	int lastPanelMax;
+	double lastEnergy;
+	double lastEnergyGenerated;
 	
 	public ContainerSolarInverter(InventoryPlayer inventoryPlayer, TileSolarInverter tEntity) {
 		tileEntity = tEntity;
@@ -164,5 +172,65 @@ class ContainerSolarInverter extends Container {
 
 		return flag1;
 	}
+	
+	/**
+     * Looks for changes made in the container, sends them to every listener.
+     */
+    public void detectAndSendChanges()
+    {
+        super.detectAndSendChanges();
+
+        for (int i = 0; i < this.crafters.size(); ++i)
+        {
+            ICrafting icrafting = (ICrafting)this.crafters.get(i);
+
+            if (this.lastPanelCount != this.tileEntity.panelCount)
+            {
+                icrafting.sendProgressBarUpdate(this, 0, this.tileEntity.panelCount);
+            }
+            if (this.lastPanelMax != this.tileEntity.panelMax)
+            {
+                icrafting.sendProgressBarUpdate(this, 1, this.tileEntity.panelMax);
+            }
+            if (this.lastEnergy != this.tileEntity.energy)
+            {
+                icrafting.sendProgressBarUpdate(this, 2, (int) this.tileEntity.energy);
+            }
+            if (this.lastEnergyGenerated != this.tileEntity.energyGenerated )
+            {
+                icrafting.sendProgressBarUpdate(this, 3, (int) this.tileEntity.energyGenerated);
+            }
+        }
+
+        this.lastPanelCount = this.tileEntity.panelCount;
+        this.lastPanelMax = this.tileEntity.panelMax;
+        this.lastEnergy = this.tileEntity.energy;
+        this.lastEnergyGenerated = this.tileEntity.energyGenerated;
+    }
+    
+    @SideOnly(Side.CLIENT)
+    public void updateProgressBar(int par1, int par2)
+    {
+        if (par1 == 0)
+        {
+            this.tileEntity.panelCount = par2;
+            FMLLog.info("Setting panel count: " + par2);
+        }
+        if (par1 == 1)
+        {
+            this.tileEntity.panelMax = par2;
+            FMLLog.info("Setting max panels: " + par2);
+        }
+        if (par1 == 2)
+        {
+            this.tileEntity.energy = par2;
+            FMLLog.info("Setting energy: " + par2);
+        }
+        if (par1 == 3)
+        {
+            this.tileEntity.energyGenerated = par2;
+            FMLLog.info("Setting energy generated: " + par2);
+        }
+    }
 
 }

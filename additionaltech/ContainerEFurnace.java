@@ -1,23 +1,29 @@
 package additionaltech;
 
+import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 public class ContainerEFurnace extends Container {
 	
 		private TileEFurnace tileEntity;
+		private int lastCookTime;
+		private int lastEnergyLevel;
 		
 		public ContainerEFurnace(InventoryPlayer inventoryPlayer, TileEFurnace tEntity) {
 			tileEntity = tEntity;
 			// the Slot constructor takes the IInventory and the slot number in that
 			// it binds to
 			// and the x-y coordinates it resides on-screen
-			//addSlotToContainer(new Slot(tileEntity, TileSolarInverter.upgradeSlot0, 152, 43));
-			//addSlotToContainer(new Slot(tileEntity, TileSolarInverter.upgradeSlot1, 152, 62));
-			//addSlotToContainer(new Slot(tileEntity, TileSolarInverter.upgradeSlot2, 152, 81));
+			addSlotToContainer(new Slot(tileEntity, TileEFurnace.itemInputSlot, 50, 58));
+			addSlotToContainer(new Slot(tileEntity, TileEFurnace.itemOutputSlot, 111, 58));
+			addSlotToContainer(new Slot(tileEntity, TileEFurnace.itemBatterySlot, 8, 79));
 					
 			// commonly used vanilla code that adds the player's inventory
 			bindPlayerInventory(inventoryPlayer);
@@ -164,5 +170,44 @@ public class ContainerEFurnace extends Container {
 
 			return flag1;
 		}
+		
+		/**
+	     * Looks for changes made in the container, sends them to every listener.
+	     */
+	    public void detectAndSendChanges()
+	    {
+	        super.detectAndSendChanges();
 
+	        for (int i = 0; i < this.crafters.size(); ++i)
+	        {
+	            ICrafting icrafting = (ICrafting)this.crafters.get(i);
+
+	            if (this.lastCookTime != this.tileEntity.furnaceCookTime)
+	            {
+	                icrafting.sendProgressBarUpdate(this, 0, this.tileEntity.furnaceCookTime);
+	            }
+	            if (this.lastEnergyLevel != this.tileEntity.energyLevel)
+	            {
+	                icrafting.sendProgressBarUpdate(this, 1, this.tileEntity.energyLevel);
+	            }
+	        }
+
+	        this.lastCookTime = this.tileEntity.furnaceCookTime;
+	        this.lastEnergyLevel = this.tileEntity.energyLevel;
+	    }
+	    
+	    @SideOnly(Side.CLIENT)
+	    public void updateProgressBar(int par1, int par2)
+	    {
+	        if (par1 == 0)
+	        {
+	            this.tileEntity.furnaceCookTime = par2;
+	            FMLLog.info("Setting furnace cook time: " + par2);
+	        }
+	        if (par1 == 1)
+	        {
+	            this.tileEntity.energyLevel = par2;
+	            FMLLog.info("Setting energy level: " + par2);
+	        }
+	    }
 	}

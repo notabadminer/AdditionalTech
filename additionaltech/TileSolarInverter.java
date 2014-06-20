@@ -17,7 +17,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.ForgeDirection;
 import additionaltech.net.PacketSolarInverter;
-import additionaltech.net.PacketSolarInverterTE;
 import buildcraft.api.power.IPowerEmitter;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerHandler.PowerReceiver;
@@ -55,7 +54,6 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter, IPip
 	
 	public void onResetButtonPressed() {
 		scanArea();
-		sendTEPacket(panelCount, panelMax, energy, energyGenerated);
 		}
 		
 	public void scanArea() {
@@ -145,7 +143,6 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter, IPip
 					}
 				}
 			}
-			FMLLog.info("AT: Max panels changed to: " + panelMax);
 		}
 	}
 	
@@ -165,7 +162,6 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter, IPip
 			}
 			else energy += energyGenerated;
 		}
-		else energyGenerated = 0;
 	}
 	
 	public void sendPower() {
@@ -192,7 +188,6 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter, IPip
 					}
 				}				
 			}
-			sendTEPacket(panelCount, panelMax, energy, energyGenerated);
 		}
 	}
 
@@ -265,21 +260,6 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter, IPip
 		tagCompound.setInteger("MaxSolarPanels", panelMax);
 		tagCompound.setDouble("EnergyLevel", energy);
 	}
-
-	// Client Server Sync
-	@Override
-	public void onDataPacket(NetworkManager net,
-			S35PacketUpdateTileEntity packet) {
-		readFromNBT(packet.func_148857_g());
-		//FMLLog.info("AT: received S35 packet");
-	}
-
-	@Override
-	public Packet getDescriptionPacket() {
-		NBTTagCompound tag = new NBTTagCompound();
-		this.writeToNBT(tag);
-		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tag);
-	}
 	
 	public void sendPacket(int button) {
 		PacketSolarInverter packet = new PacketSolarInverter(xCoord, yCoord,
@@ -287,11 +267,6 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter, IPip
 		AdditionalTech.packetPipeline.sendToServer(packet);
 	}
 	
-	public void sendTEPacket(int panelCount, int panelMax, double energy, double energyGenerated) {
-		PacketSolarInverterTE packet = new PacketSolarInverterTE(xCoord, yCoord, zCoord, panelCount, panelMax, energy, energyGenerated);
-		AdditionalTech.packetPipeline.sendToAll(packet);
-	}
-
 	@Override
 	public int getSizeInventory() {
 		return inventory.length;

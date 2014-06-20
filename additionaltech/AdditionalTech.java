@@ -84,11 +84,10 @@ public class AdditionalTech {
     	GameRegistry.registerItem(itemStageTwoCore, itemStageTwoCore.getUnlocalizedName());
     	GameRegistry.registerItem(itemStageThreeCore, itemStageThreeCore.getUnlocalizedName());
     	
-    	GameRegistry.registerTileEntity(TileSolarInverter.class, "TileSolarInverter");
-    	NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandlerSolarInverter());
+    	NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
     	
+    	GameRegistry.registerTileEntity(TileSolarInverter.class, "TileSolarInverter");
     	GameRegistry.registerTileEntity(TileEFurnace.class, "TileEFurnace");
-    	NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandlerEFurnace());
     	
     	RecipeHandler.addRecipes();
     }

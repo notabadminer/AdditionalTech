@@ -6,7 +6,7 @@ import net.minecraft.world.World;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.network.IGuiHandler;
 
-class GuiHandlerSolarInverter implements IGuiHandler {
+class GuiHandler implements IGuiHandler {
 
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world,
@@ -15,6 +15,9 @@ class GuiHandlerSolarInverter implements IGuiHandler {
         if(tileEntity instanceof TileSolarInverter){
                 return new ContainerSolarInverter(player.inventory, (TileSolarInverter) tileEntity);
         }
+        if(tileEntity instanceof TileEFurnace){
+            return new ContainerEFurnace(player.inventory, (TileEFurnace) tileEntity);
+    }
         return null;
 	}
 
@@ -25,6 +28,9 @@ class GuiHandlerSolarInverter implements IGuiHandler {
         if(tileEntity instanceof TileSolarInverter){
                 return new GUISolarInverter(player.inventory, (TileSolarInverter) tileEntity);
         }
+        if(tileEntity instanceof TileEFurnace){
+            return new GuiEFurnace(player.inventory, (TileEFurnace) tileEntity);
+    }
         return null;
 	}	
 }

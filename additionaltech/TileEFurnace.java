@@ -1,5 +1,6 @@
 package additionaltech;
 
+import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.relauncher.Side;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerHandler;
@@ -13,8 +14,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEFurnace extends TileEntity implements IPipeConnection, IPowerReceptor, IInventory {
@@ -23,6 +27,10 @@ public class TileEFurnace extends TileEntity implements IPipeConnection, IPowerR
 	public int energyCost = 1;
 	private ItemStack[] furnaceItemStacks = new ItemStack[3];
     public int furnaceCookTime;
+    public int energyLevel;
+    public static final int itemInputSlot = 0;
+	public static final int itemOutputSlot = 1;
+	public static final int itemBatterySlot = 2;
 
 	public TileEFurnace() {
 		powerHandler = new PowerHandler(this, Type.MACHINE);
@@ -30,7 +38,7 @@ public class TileEFurnace extends TileEntity implements IPipeConnection, IPowerR
 	}
 
 	private void initPowerProvider() {
-		powerHandler.configure(10, 150, 25, 1000);
+		powerHandler.configure(10, 150, 25, 1001);
 		powerHandler.configurePowerPerdition(0, 0);
 	}
 
@@ -57,25 +65,26 @@ public class TileEFurnace extends TileEntity implements IPipeConnection, IPowerR
 	public void updateEntity() {
 	
 		boolean flag1 = false;
-		double energyUsed = powerHandler.useEnergy(energyCost, energyCost, true);
 	
 		if (worldObj.isRemote) {
 			return;
 		}
 		
-		if (!this.worldObj.isRemote && this.canSmelt() && energyUsed > 0) {
-                ++this.furnaceCookTime;
-
-                if (this.furnaceCookTime == 200) {
-                    this.furnaceCookTime = 0;
-                    this.smeltItem();
-                    flag1 = true;
-                }
-                else {
-                this.furnaceCookTime = 0;
-            }
-        }
+		energyLevel = (int) powerHandler.getEnergyStored();
 		
+		if (this.canSmelt() && energyLevel > 0) {
+			furnaceCookTime++;
+			powerHandler.useEnergy(energyCost, energyCost, true);
+
+			if (this.furnaceCookTime == 200) {
+				this.furnaceCookTime = 0;
+				this.smeltItem();
+				flag1 = true;
+			}
+		} else {
+			this.furnaceCookTime = 0;
+		}
+
 		if (flag1) {
             this.markDirty();
         }
@@ -94,10 +103,10 @@ public class TileEFurnace extends TileEntity implements IPipeConnection, IPowerR
         {
             ItemStack itemstack = FurnaceRecipes.smelting().getSmeltingResult(this.furnaceItemStacks[0]);
             if (itemstack == null) return false;
-            if (this.furnaceItemStacks[2] == null) return true;
-            if (!this.furnaceItemStacks[2].isItemEqual(itemstack)) return false;
-            int result = furnaceItemStacks[2].stackSize + itemstack.stackSize;
-            return result <= getInventoryStackLimit() && result <= this.furnaceItemStacks[2].getMaxStackSize(); //Forge BugFix: Make it respect stack sizes properly.
+            if (this.furnaceItemStacks[1] == null) return true;
+            if (!this.furnaceItemStacks[1].isItemEqual(itemstack)) return false;
+            int result = furnaceItemStacks[1].stackSize + itemstack.stackSize;
+            return result <= getInventoryStackLimit() && result <= this.furnaceItemStacks[1].getMaxStackSize(); //Forge BugFix: Make it respect stack sizes properly.
         }
     }
 
@@ -110,13 +119,13 @@ public class TileEFurnace extends TileEntity implements IPipeConnection, IPowerR
         {
             ItemStack itemstack = FurnaceRecipes.smelting().getSmeltingResult(this.furnaceItemStacks[0]);
 
-            if (this.furnaceItemStacks[2] == null)
+            if (this.furnaceItemStacks[1] == null)
             {
-                this.furnaceItemStacks[2] = itemstack.copy();
+                this.furnaceItemStacks[1] = itemstack.copy();
             }
-            else if (this.furnaceItemStacks[2].getItem() == itemstack.getItem())
+            else if (this.furnaceItemStacks[1].getItem() == itemstack.getItem())
             {
-                this.furnaceItemStacks[2].stackSize += itemstack.stackSize; // Forge BugFix: Results may have multiple items
+                this.furnaceItemStacks[1].stackSize += itemstack.stackSize; // Forge BugFix: Results may have multiple items
             }
 
             --this.furnaceItemStacks[0].stackSize;
@@ -213,11 +222,14 @@ public class TileEFurnace extends TileEntity implements IPipeConnection, IPowerR
      * Returns an integer between 0 and the passed value representing how close the current item is to being completely
      * cooked
      */
-    public int getCookProgressScaled(int progress)
-    {
+    public int getCookProgressScaled(int progress) {
         return this.furnaceCookTime * progress / 200;
     }
-
+    
+    public int getEnergyLevelScaled(int scale) {
+        return this.energyLevel * scale / (int) this.powerHandler.getMaxEnergyStored();
+    }
+    
 	@Override
 	public void openInventory() {
 		// TODO Auto-generated method stub
@@ -239,6 +251,42 @@ public class TileEFurnace extends TileEntity implements IPipeConnection, IPowerR
 		return worldObj.getTileEntity(xCoord, yCoord, zCoord) == this
 				&& entityplayer.getDistanceSq(xCoord + 0.5, yCoord + 0.5,
 						zCoord + 0.5) < 64;
+	}
+	
+	@Override
+	public void writeToNBT(NBTTagCompound tagCompound) {
+		super.writeToNBT(tagCompound);
+		NBTTagList itemList = new NBTTagList();
+		for (int i = 0; i < furnaceItemStacks.length; i++) {
+			ItemStack stack = furnaceItemStacks[i];
+			if (stack != null) {
+				NBTTagCompound tag = new NBTTagCompound();
+				tag.setByte("Slot", (byte) i);
+				stack.writeToNBT(tag);
+				itemList.appendTag(tag);
+			}
+		}
+		tagCompound.setTag("Inventory", itemList);
+		tagCompound.setInteger("EnergyLevel", energyLevel);
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		NBTTagList tagList = tagCompound.getTagList("Inventory",
+				Constants.NBT.TAG_COMPOUND);
+		for (int i = 0; i < tagList.tagCount(); i++) {
+			NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
+			byte slot = tag.getByte("Slot");
+			if (slot >= 0 && slot < furnaceItemStacks.length) {
+				furnaceItemStacks[slot] = ItemStack.loadItemStackFromNBT(tag);
+			}
+		}
+		try {
+			energyLevel = tagCompound.getInteger("EnergyLevel");
+		} catch (Throwable ex2) {
+			energyLevel = 0;
+		}
 	}
 
 }

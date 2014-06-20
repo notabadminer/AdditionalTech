@@ -1,11 +1,12 @@
 package additionaltech;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -13,14 +14,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.FMLLog;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+
 
 public class BlockEFurnace extends BlockContainer{
 	@SideOnly(Side.CLIENT)
 	protected IIcon blockIcon;
 	protected IIcon blockIconFace;
+	private boolean isActive;
 
 	public BlockEFurnace() {
 		super(new Material(MapColor.stoneColor));
@@ -35,7 +35,7 @@ public class BlockEFurnace extends BlockContainer{
 	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(IIconRegister par1IconRegister) {
 		blockIcon = par1IconRegister.registerIcon("additionaltech:Casing");
-		blockIconFace = par1IconRegister.registerIcon("additionaltech:EFurnaceFace");
+		blockIconFace = par1IconRegister.registerIcon("additionaltech:"+ (this.isActive ? "EFurnaceFaceActive" : "EFurnaceFace"));
 	}
 	
 	@Override
@@ -77,7 +77,7 @@ public class BlockEFurnace extends BlockContainer{
 				return false;
 		}
 		tileEntity.getDescriptionPacket(); //update the tile entity on gui open
-		player.openGui(AdditionalTech.instance, 0, world, x, y, z);
+		player.openGui(AdditionalTech.instance, 1, world, x, y, z);
 		return true;
     }
 	
