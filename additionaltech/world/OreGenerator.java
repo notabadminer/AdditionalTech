@@ -3,6 +3,7 @@ package additionaltech.world;
 import java.util.Random;
 
 import additionaltech.AdditionalTech;
+import additionaltech.RegistryHandler;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.feature.WorldGenMinable;
@@ -38,7 +39,7 @@ public class OreGenerator implements IWorldGenerator {
 				int firstBlockYCoord = random.nextInt(64);
 				int firstBlockZCoord = j + random.nextInt(16);
 				
-				(new WorldGenMinable(AdditionalTech.oreCopper, 13)).generate(world, random, firstBlockXCoord, firstBlockYCoord, firstBlockZCoord);
+				(new WorldGenMinable(RegistryHandler.oreCopper, 13)).generate(world, random, firstBlockXCoord, firstBlockYCoord, firstBlockZCoord);
 			}
 		}
 	}

@@ -17,13 +17,13 @@ import cpw.mods.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-public class GUISolarInverter extends GuiContainer {
+public class GuiSolarInverter extends GuiContainer {
 	
 	private TileSolarInverter tileEntity;
 	private GuiButton resetButton;
 	public static final int idResetButton = 0;
 		
-	public GUISolarInverter(InventoryPlayer inventoryPlayer,
+	public GuiSolarInverter(InventoryPlayer inventoryPlayer,
 			TileSolarInverter parTileEntity) {
 		super(new ContainerSolarInverter(inventoryPlayer, parTileEntity));
 		tileEntity = parTileEntity;

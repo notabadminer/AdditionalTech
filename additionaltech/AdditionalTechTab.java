@@ -11,7 +11,7 @@ public class AdditionalTechTab extends CreativeTabs {
 
 	@Override
 	public Item getTabIconItem() {
-		return Item.getItemFromBlock(AdditionalTech.blockSolarInverter);
+		return Item.getItemFromBlock(RegistryHandler.blockSolarInverter);
 	}
 
 }

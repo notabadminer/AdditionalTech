@@ -26,7 +26,7 @@ class GuiHandler implements IGuiHandler {
 			int x, int y, int z) {
 		TileEntity tileEntity = world.getTileEntity(x, y, z);
         if(tileEntity instanceof TileSolarInverter){
-                return new GUISolarInverter(player.inventory, (TileSolarInverter) tileEntity);
+                return new GuiSolarInverter(player.inventory, (TileSolarInverter) tileEntity);
         }
         if(tileEntity instanceof TileEFurnace){
             return new GuiEFurnace(player.inventory, (TileEFurnace) tileEntity);

@@ -25,12 +25,15 @@ public class TileEFurnace extends TileEntity implements IPipeConnection, IPowerR
 	
 	private PowerHandler powerHandler;
 	public int energyCost = 1;
-	private ItemStack[] furnaceItemStacks = new ItemStack[3];
+	private ItemStack[] furnaceItemStacks = new ItemStack[6];
     public int furnaceCookTime;
     public int energyLevel;
-    public static final int itemInputSlot = 0;
-	public static final int itemOutputSlot = 1;
-	public static final int itemBatterySlot = 2;
+    public static final int slotInput = 0;
+	public static final int slotOutput = 1;
+	public static final int slotBattery = 2;
+	public static final int slotUpgrade1 = 3;
+	public static final int slotUpgrade2 = 4;
+	public static final int slotUpgrade3 = 5;
 
 	public TileEFurnace() {
 		powerHandler = new PowerHandler(this, Type.MACHINE);

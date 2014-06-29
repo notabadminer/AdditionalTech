@@ -7,14 +7,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class RecipeHandler {
-	private static ItemStack oneSolarPanel = new ItemStack(AdditionalTech.blockSolarPanel);
-	private static ItemStack oneCopperOre = new ItemStack(AdditionalTech.oreCopper);
-	private static ItemStack oneCopperIngot = new ItemStack(AdditionalTech.ingotCopper);
-	private static ItemStack sixCopperWire = new ItemStack(AdditionalTech.wireCopper, 6);
-	private static ItemStack oneInverterCore = new ItemStack(AdditionalTech.itemInverterCore);
-	private static ItemStack oneStageTwoCore = new ItemStack(AdditionalTech.itemStageTwoCore);
-	private static ItemStack oneStageThreeCore = new ItemStack(AdditionalTech.itemStageThreeCore);
-	private static ItemStack oneSolarInverter = new ItemStack(AdditionalTech.blockSolarInverter);
+	private static ItemStack oneSolarPanel = new ItemStack(RegistryHandler.blockSolarPanel);
+	private static ItemStack oneCopperOre = new ItemStack(RegistryHandler.oreCopper);
+	private static ItemStack oneCopperIngot = new ItemStack(RegistryHandler.ingotCopper);
+	private static ItemStack sixCopperWire = new ItemStack(RegistryHandler.wireCopper, 6);
+	private static ItemStack oneInverterCore = new ItemStack(RegistryHandler.itemInverterCore);
+	private static ItemStack oneStageTwoCore = new ItemStack(RegistryHandler.itemStageTwoCore);
+	private static ItemStack oneStageThreeCore = new ItemStack(RegistryHandler.itemStageThreeCore);
+	private static ItemStack oneSolarInverter = new ItemStack(RegistryHandler.blockSolarInverter);
 
 	public static void addRecipes(){
 		GameRegistry.addShapedRecipe(oneSolarPanel, new Object[]{
@@ -33,29 +33,29 @@ public class RecipeHandler {
 				"WIW",
 				"WIW",
 				"WIW",
-				'W', AdditionalTech.wireCopper, 'I', Items.iron_ingot
+				'W', RegistryHandler.wireCopper, 'I', Items.iron_ingot
 			});
 		GameRegistry.addShapedRecipe(oneStageTwoCore, new Object[]{
 				"CCC",
 				"XXX",
 				"XXX",
-				'C', AdditionalTech.itemInverterCore
+				'C', RegistryHandler.itemInverterCore
 			});
 		GameRegistry.addShapedRecipe(oneStageThreeCore, new Object[]{
 				"CCC",
 				"XXX",
 				"XXX",
-				'C', AdditionalTech.itemStageTwoCore
+				'C', RegistryHandler.itemStageTwoCore
 			});
 		GameRegistry.addShapedRecipe(oneSolarInverter, new Object[]{
 				"III",
 				"ICI",
 				"III",
-				'C', AdditionalTech.itemInverterCore, 'I', Items.iron_ingot
+				'C', RegistryHandler.itemInverterCore, 'I', Items.iron_ingot
 			});
 		GameRegistry.addShapelessRecipe(new ItemStack(
-				AdditionalTech.blockEFurnace), new Object[] { Blocks.furnace,
-				AdditionalTech.itemInverterCore });
+				RegistryHandler.blockEFurnace), new Object[] { Blocks.furnace,
+				RegistryHandler.itemInverterCore });
 		GameRegistry.addSmelting(oneCopperOre, oneCopperIngot, 0.8F);
 
 	}

@@ -134,11 +134,11 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter, IPip
 			for (int i = 0; i < inventory.length; i++) {
 				ItemStack stack = inventory[i];
 				if (stack != null) {
-					if (stack.getItem() == AdditionalTech.itemInverterCore) {
+					if (stack.getItem() == RegistryHandler.itemInverterCore) {
 						panelMax += 9;
-					} else if (stack.getItem() == AdditionalTech.itemStageTwoCore) {
+					} else if (stack.getItem() == RegistryHandler.itemStageTwoCore) {
 						panelMax += 24;
-					} else if (stack.getItem() == AdditionalTech.itemStageThreeCore) {
+					} else if (stack.getItem() == RegistryHandler.itemStageThreeCore) {
 						panelMax += 50;
 					}
 				}
@@ -341,9 +341,9 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter, IPip
 	public boolean isItemValidForSlot(int slot, ItemStack stack) {
 		Item stackItem = stack.getItem();
 		if (slot == upgradeSlot0 || slot == upgradeSlot1 || slot == upgradeSlot2) {
-			return stackItem == AdditionalTech.itemInverterCore
-					|| stackItem == AdditionalTech.itemStageTwoCore
-					|| stackItem == AdditionalTech.itemStageThreeCore;
+			return stackItem == RegistryHandler.itemInverterCore
+					|| stackItem == RegistryHandler.itemStageTwoCore
+					|| stackItem == RegistryHandler.itemStageThreeCore;
 		} else return false;
 	}
 

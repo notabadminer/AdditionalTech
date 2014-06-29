@@ -21,9 +21,12 @@ public class ContainerEFurnace extends Container {
 			// the Slot constructor takes the IInventory and the slot number in that
 			// it binds to
 			// and the x-y coordinates it resides on-screen
-			addSlotToContainer(new Slot(tileEntity, TileEFurnace.itemInputSlot, 50, 58));
-			addSlotToContainer(new Slot(tileEntity, TileEFurnace.itemOutputSlot, 111, 58));
-			addSlotToContainer(new Slot(tileEntity, TileEFurnace.itemBatterySlot, 8, 79));
+			addSlotToContainer(new Slot(tileEntity, TileEFurnace.slotInput, 50, 58));
+			addSlotToContainer(new Slot(tileEntity, TileEFurnace.slotOutput, 109, 58));
+			addSlotToContainer(new Slot(tileEntity, TileEFurnace.slotBattery, 8, 79));
+			addSlotToContainer(new Slot(tileEntity, TileEFurnace.slotUpgrade1, 152, 42));
+			addSlotToContainer(new Slot(tileEntity, TileEFurnace.slotUpgrade2, 152, 60));
+			addSlotToContainer(new Slot(tileEntity, TileEFurnace.slotUpgrade3, 152, 78));
 					
 			// commonly used vanilla code that adds the player's inventory
 			bindPlayerInventory(inventoryPlayer);
@@ -57,8 +60,8 @@ public class ContainerEFurnace extends Container {
 				stack = stackInSlot.copy();
 				
 				// merges the item into player inventory since its in the tileEntity
-				if (slot < 4) {
-					if (!this.mergeItemStack(stackInSlot, 4, 36, true)) {
+				if (slot <= 6) {
+					if (!this.mergeItemStack(stackInSlot, 7, 42, true)) {
 						return null;
 					}
 				}
@@ -66,7 +69,7 @@ public class ContainerEFurnace extends Container {
 				// inventory
 				else {
 					boolean foundSlot = false;
-					for (int i = 0; i < 4; i++){
+					for (int i = 0; i < 7; i++){
 						if (((Slot)inventorySlots.get(i)).isItemValid(stackInSlot) && this.mergeItemStack(stackInSlot, i, i + 1, false)) {
 							foundSlot = true;
 							break;

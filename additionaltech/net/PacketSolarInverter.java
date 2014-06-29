@@ -1,6 +1,6 @@
 package additionaltech.net;
 
-import additionaltech.GUISolarInverter;
+import additionaltech.GuiSolarInverter;
 import additionaltech.TileSolarInverter;
 import cpw.mods.fml.common.FMLLog;
 import io.netty.buffer.ByteBuf;
@@ -55,7 +55,7 @@ public PacketSolarInverter(int x, int y, int z, int button) {
 		
         if (tEntity instanceof TileSolarInverter) {	
         	
-        	if (button <= GUISolarInverter.idResetButton){
+        	if (button <= GuiSolarInverter.idResetButton){
 				((TileSolarInverter) tEntity).onResetButtonPressed();
 			}
 
