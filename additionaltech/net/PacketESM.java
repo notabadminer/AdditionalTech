@@ -1,8 +1,7 @@
 package additionaltech.net;
 
 import additionaltech.gui.GuiSolarInverter;
-import additionaltech.tile.TileSolarInverter;
-import cpw.mods.fml.common.FMLLog;
+import additionaltech.tile.TileESM;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,15 +10,15 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-public class PacketSolarInverter extends AbstractPacket {
+public class PacketESM extends AbstractPacket {
 	
 	private int x, y, z, button;
 	
-public PacketSolarInverter() {
+public PacketESM() {
     	
     }
 
-public PacketSolarInverter(int x, int y, int z, int button) {
+public PacketESM(int x, int y, int z, int button) {
     this.x = x;
     this.y = y;
     this.z = z;
@@ -53,11 +52,8 @@ public PacketSolarInverter(int x, int y, int z, int button) {
 		World world = player.worldObj;
 		TileEntity tEntity = world.getTileEntity(x, y, z);
 		
-        if (tEntity instanceof TileSolarInverter) {	
-        	
-        	if (button <= GuiSolarInverter.idResetButton){
-				((TileSolarInverter) tEntity).onResetButtonPressed();
-			}
+        if (tEntity instanceof TileESM) {
+			((TileESM) tEntity).configurePowerHandler(button);
 
 			NBTTagCompound data = new NBTTagCompound();
             tEntity.writeToNBT(data);

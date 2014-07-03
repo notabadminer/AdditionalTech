@@ -1,12 +1,16 @@
-package additionaltech;
+package additionaltech.gui;
 
+import additionaltech.tile.TileEFurnace;
+import additionaltech.tile.TileESM;
+import additionaltech.tile.TileGrinder;
+import additionaltech.tile.TileSolarInverter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.network.IGuiHandler;
 
-class GuiHandler implements IGuiHandler {
+
+public class GuiHandler implements IGuiHandler {
 
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world,
@@ -17,9 +21,15 @@ class GuiHandler implements IGuiHandler {
         }
         if(tileEntity instanceof TileEFurnace){
             return new ContainerEFurnace(player.inventory, (TileEFurnace) tileEntity);
-    }
+        }
+        if(tileEntity instanceof TileESM){
+            return new ContainerESM(player.inventory, (TileESM) tileEntity);
+        }
+        if(tileEntity instanceof TileGrinder){
+            return new ContainerGrinder(player.inventory, (TileGrinder) tileEntity);
+        }
         return null;
-	}
+		}
 
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, World world,
@@ -30,7 +40,13 @@ class GuiHandler implements IGuiHandler {
         }
         if(tileEntity instanceof TileEFurnace){
             return new GuiEFurnace(player.inventory, (TileEFurnace) tileEntity);
-    }
+        }
+        if(tileEntity instanceof TileESM){
+            return new GuiESM(player.inventory, (TileESM) tileEntity);
+        }
+        if(tileEntity instanceof TileGrinder){
+            return new GuiGrinder(player.inventory, (TileGrinder) tileEntity);
+        }
         return null;
-	}	
+		}
 }

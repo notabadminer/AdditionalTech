@@ -1,4 +1,4 @@
-package additionaltech;
+package additionaltech.tile;
 
 import java.util.EnumSet;
 import java.util.LinkedList;
@@ -16,6 +16,9 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.ForgeDirection;
+import additionaltech.AdditionalTech;
+import additionaltech.RegistryHandler;
+import additionaltech.blocks.BlockSolarPanel;
 import additionaltech.net.PacketSolarInverter;
 import buildcraft.api.power.IPowerEmitter;
 import buildcraft.api.power.IPowerReceptor;
@@ -50,6 +53,10 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter, IPip
 		super.updateEntity();
 		generatePower();
 		sendPower();
+		//if panel count is greater than zero, assume power is generated and hum
+		if (panelCount > 0 && worldObj.isRemote) {
+			worldObj.playSound(xCoord, yCoord, zCoord, "additionaltech:inverterHum", 0.7F, 1.0F, true);
+		}
 	}
 	
 	public void onResetButtonPressed() {
@@ -154,7 +161,7 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter, IPip
 	}
 
 	public void generatePower() {
-		if (!worldObj.isRemote && worldObj.isDaytime() && (!worldObj.isRaining() && !worldObj.isThundering())) {		
+		if (!worldObj.isRemote && worldObj.isDaytime() && (!worldObj.isRaining() && !worldObj.isThundering())) {
 			energyGenerated = panelCount * 0.25;
 			if (energy + energyGenerated > maxEnergy) {
 				energyGenerated = maxEnergy - energy;

@@ -4,7 +4,15 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.oredict.OreDictionary;
 import cpw.mods.fml.common.registry.GameRegistry;
-import additionaltech.items.BlockOreCopper;
+import additionaltech.blocks.BlockEFurnace;
+import additionaltech.blocks.BlockESM;
+import additionaltech.blocks.BlockESMIICore;
+import additionaltech.blocks.BlockESMIIICore;
+import additionaltech.blocks.BlockGrinder;
+import additionaltech.blocks.BlockOreCopper;
+import additionaltech.blocks.BlockSolarInverter;
+import additionaltech.blocks.BlockSolarPanel;
+import additionaltech.items.ItemBlockESM;
 import additionaltech.items.ItemDustCopper;
 import additionaltech.items.ItemDustDiamond;
 import additionaltech.items.ItemDustGold;
@@ -25,7 +33,12 @@ public class RegistryHandler {
 	public static Block blockSolarPanel;
     public static Block blockSolarInverter;
     public static Block blockEFurnace;
+    public static Block blockESM;
+    public static Block blockGrinder;
+    public static Block blockESMIICore;
+    public static Block blockESMIIICore;
     public static Block oreCopper;
+
     public static Item dustCopper;
     public static Item dustDiamond;
     public static Item dustGold;
@@ -41,16 +54,25 @@ public class RegistryHandler {
     public static Item itemStageTwoCore;
     public static Item itemStageThreeCore;
     public static Item itemHeatingElement;
+    public static Item itemBlockESM;
 	
 	public static void registerBlocks(){
 		blockSolarPanel = new BlockSolarPanel().setBlockName("blockSolarPanel");
     	blockSolarInverter = new BlockSolarInverter().setBlockName("blockSolarInverter");
     	blockEFurnace = new BlockEFurnace().setBlockName("blockEFurnace");
+    	blockESM = new BlockESM().setBlockName("blockESM");
+    	blockESMIICore = new BlockESMIICore().setBlockName("blockESMIICore");
+    	blockESMIIICore = new BlockESMIIICore().setBlockName("blockESMIIICore");
+    	blockGrinder = new BlockGrinder().setBlockName("blockGrinder");
     	oreCopper = new BlockOreCopper().setBlockName("oreCopper");
     	
     	GameRegistry.registerBlock(blockSolarPanel, blockSolarPanel.getUnlocalizedName());
     	GameRegistry.registerBlock(blockSolarInverter, blockSolarInverter.getUnlocalizedName());
-    	GameRegistry.registerBlock(blockEFurnace, blockEFurnace.getUnlocalizedName());    	
+    	GameRegistry.registerBlock(blockEFurnace, blockEFurnace.getUnlocalizedName());
+    	GameRegistry.registerBlock(blockESM, ItemBlockESM.class, blockESM.getUnlocalizedName());
+    	GameRegistry.registerBlock(blockESMIICore, blockESMIICore.getUnlocalizedName());
+    	GameRegistry.registerBlock(blockESMIIICore, blockESMIIICore.getUnlocalizedName());
+    	GameRegistry.registerBlock(blockGrinder, blockGrinder.getUnlocalizedName());
     	GameRegistry.registerBlock(oreCopper, oreCopper.getUnlocalizedName());
     	OreDictionary.registerOre("oreCopper", oreCopper);
 	}

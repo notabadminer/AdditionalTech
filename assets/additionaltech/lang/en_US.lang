@@ -1,6 +1,12 @@
 tile.blockSolarPanel.name=Solar Panel
 tile.blockSolarInverter.name=Solar Inverter
 tile.blockEFurnace.name=Energized Furnace
+tile.blockESMI.name=Energy Storage Module (ESM)
+tile.blockESMII.name=Energy Storage Module (ESMII)
+tile.blockESMIII.name=Energy Storage Module (ESMIII)
+tile.blockESMIICore.name=Energy Core
+tile.blockESMIIICore.name=High Energy Core
+tile.blockGrinder.name=Grinder
 tile.oreCopper.name=Copper Ore
 item.ingotCopper.name=Copper Ingot
 item.wireCopper.name=Copper Wire

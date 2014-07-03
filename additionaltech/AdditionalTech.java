@@ -1,7 +1,12 @@
 package additionaltech;
 
 import additionaltech.net.PacketPipeline;
+import additionaltech.tile.TileEFurnace;
+import additionaltech.tile.TileESM;
+import additionaltech.tile.TileGrinder;
+import additionaltech.tile.TileSolarInverter;
 import additionaltech.world.OreGenerator;
+import additionaltech.gui.GuiHandler;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.common.config.Configuration;
 import cpw.mods.fml.common.Mod;
@@ -13,7 +18,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid="additionaltech", name="Additional Tech", version="0.1.1", dependencies = "required-after:Forge@[10.12.1.1060,)")
+@Mod(modid="additionaltech", name="Additional Tech", version="0.9.0", dependencies = "required-after:Forge@[10.12.1.1060,)")
 
 public class AdditionalTech {
 	// The instance of your mod that Forge uses.
@@ -49,8 +54,11 @@ public class AdditionalTech {
     	
     	GameRegistry.registerTileEntity(TileSolarInverter.class, "TileSolarInverter");
     	GameRegistry.registerTileEntity(TileEFurnace.class, "TileEFurnace");
+    	GameRegistry.registerTileEntity(TileGrinder.class, "TileGrinder");
+    	GameRegistry.registerTileEntity(TileESM.class, "TileESM");
     	
     	RecipeHandler.addRecipes();
+    	GrinderRecipes.initGrinderRecipes();
     }
     
     @EventHandler

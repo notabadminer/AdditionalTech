@@ -136,6 +136,7 @@ public class PacketPipeline extends MessageToMessageCodec<FMLProxyPacket, Abstra
     public void registerPackets ()
     {
         registerPacket(PacketSolarInverter.class);
+        registerPacket(PacketESM.class);
     }
 
     // Method to call from FMLPostInitializationEvent

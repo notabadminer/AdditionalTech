@@ -1,5 +1,6 @@
-package additionaltech;
+package additionaltech.gui;
 
+import additionaltech.tile.TileSolarInverter;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -23,9 +24,9 @@ class ContainerSolarInverter extends Container {
 		// the Slot constructor takes the IInventory and the slot number in that
 		// it binds to
 		// and the x-y coordinates it resides on-screen
-		addSlotToContainer(new Slot(tileEntity, TileSolarInverter.upgradeSlot0, 152, 43));
-		addSlotToContainer(new Slot(tileEntity, TileSolarInverter.upgradeSlot1, 152, 62));
-		addSlotToContainer(new Slot(tileEntity, TileSolarInverter.upgradeSlot2, 152, 81));
+		addSlotToContainer(new SlotInverterUpgrade(tileEntity, TileSolarInverter.upgradeSlot0, 152, 43));
+		addSlotToContainer(new SlotInverterUpgrade(tileEntity, TileSolarInverter.upgradeSlot1, 152, 62));
+		addSlotToContainer(new SlotInverterUpgrade(tileEntity, TileSolarInverter.upgradeSlot2, 152, 81));
 				
 		// commonly used vanilla code that adds the player's inventory
 		bindPlayerInventory(inventoryPlayer);
@@ -60,7 +61,7 @@ class ContainerSolarInverter extends Container {
 			
 			// merges the item into player inventory since its in the tileEntity
 			if (slot < 4) {
-				if (!this.mergeItemStack(stackInSlot, 4, 36, true)) {
+				if (!this.mergeItemStack(stackInSlot, 4, 39, true)) {
 					return null;
 				}
 			}

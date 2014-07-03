@@ -1,6 +1,6 @@
-package additionaltech;
+package additionaltech.gui;
 
-import cpw.mods.fml.common.FMLLog;
+import additionaltech.tile.TileGrinder;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
@@ -10,23 +10,27 @@ import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-public class ContainerEFurnace extends Container {
+public class ContainerGrinder extends Container {
 	
-		private TileEFurnace tileEntity;
+		private TileGrinder tileEntity;
+		private int lastTimer;
 		private int lastCookTime;
 		private int lastEnergyLevel;
+		private int lastBatteryLevel;
+		private int lastBatteryMax;
 		
-		public ContainerEFurnace(InventoryPlayer inventoryPlayer, TileEFurnace tEntity) {
+		public ContainerGrinder(InventoryPlayer inventoryPlayer, TileGrinder tEntity) {
 			tileEntity = tEntity;
 			// the Slot constructor takes the IInventory and the slot number in that
 			// it binds to
 			// and the x-y coordinates it resides on-screen
-			addSlotToContainer(new Slot(tileEntity, TileEFurnace.slotInput, 50, 58));
-			addSlotToContainer(new Slot(tileEntity, TileEFurnace.slotOutput, 109, 58));
-			addSlotToContainer(new Slot(tileEntity, TileEFurnace.slotBattery, 8, 79));
-			addSlotToContainer(new Slot(tileEntity, TileEFurnace.slotUpgrade1, 152, 42));
-			addSlotToContainer(new Slot(tileEntity, TileEFurnace.slotUpgrade2, 152, 60));
-			addSlotToContainer(new Slot(tileEntity, TileEFurnace.slotUpgrade3, 152, 78));
+			addSlotToContainer(new Slot(tileEntity, TileGrinder.slotInput, 50, 58));
+			addSlotToContainer(new SlotOutput(tileEntity, TileGrinder.slotOutput, 103, 58));
+			addSlotToContainer(new SlotOutput(tileEntity, TileGrinder.slotOutput1, 121, 58));
+			addSlotToContainer(new SlotBattery(tileEntity, TileGrinder.slotBattery, 29, 82));
+			addSlotToContainer(new SlotFurnaceUpgrade(tileEntity, TileGrinder.slotUpgrade1, 152, 42));
+			addSlotToContainer(new SlotFurnaceUpgrade(tileEntity, TileGrinder.slotUpgrade2, 152, 60));
+			addSlotToContainer(new SlotFurnaceUpgrade(tileEntity, TileGrinder.slotUpgrade3, 152, 78));
 					
 			// commonly used vanilla code that adds the player's inventory
 			bindPlayerInventory(inventoryPlayer);
@@ -60,7 +64,7 @@ public class ContainerEFurnace extends Container {
 				stack = stackInSlot.copy();
 				
 				// merges the item into player inventory since its in the tileEntity
-				if (slot <= 6) {
+				if (slot <= 7) {
 					if (!this.mergeItemStack(stackInSlot, 7, 42, true)) {
 						return null;
 					}
@@ -69,7 +73,7 @@ public class ContainerEFurnace extends Container {
 				// inventory
 				else {
 					boolean foundSlot = false;
-					for (int i = 0; i < 7; i++){
+					for (int i = 0; i <= 7; i++){
 						if (((Slot)inventorySlots.get(i)).isItemValid(stackInSlot) && this.mergeItemStack(stackInSlot, i, i + 1, false)) {
 							foundSlot = true;
 							break;
@@ -185,18 +189,32 @@ public class ContainerEFurnace extends Container {
 	        {
 	            ICrafting icrafting = (ICrafting)this.crafters.get(i);
 
-	            if (this.lastCookTime != this.tileEntity.furnaceCookTime)
+	            if (this.lastTimer != this.tileEntity.grindTimer)
 	            {
-	                icrafting.sendProgressBarUpdate(this, 0, this.tileEntity.furnaceCookTime);
+	                icrafting.sendProgressBarUpdate(this, 0, this.tileEntity.grindTimer);
+	            }
+	            if (this.lastCookTime != this.tileEntity.grindTime)
+	            {
+	                icrafting.sendProgressBarUpdate(this, 1, this.tileEntity.grindTime);
 	            }
 	            if (this.lastEnergyLevel != this.tileEntity.energyLevel)
 	            {
-	                icrafting.sendProgressBarUpdate(this, 1, this.tileEntity.energyLevel);
+	                icrafting.sendProgressBarUpdate(this, 2, this.tileEntity.energyLevel);
+	            }
+	            if (this.lastBatteryLevel != this.tileEntity.batteryLevel)
+	            {
+	                icrafting.sendProgressBarUpdate(this, 3, this.tileEntity.batteryLevel);
+	            }
+	            if (this.lastBatteryMax != this.tileEntity.batteryMax)
+	            {
+	                icrafting.sendProgressBarUpdate(this, 4, (int) this.tileEntity.batteryMax);
 	            }
 	        }
 
-	        this.lastCookTime = this.tileEntity.furnaceCookTime;
+	        this.lastTimer = this.tileEntity.grindTimer;
 	        this.lastEnergyLevel = this.tileEntity.energyLevel;
+	        this.lastBatteryLevel = this.tileEntity.batteryLevel;
+	        this.lastBatteryMax = (int) this.tileEntity.batteryMax;
 	    }
 	    
 	    @SideOnly(Side.CLIENT)
@@ -204,13 +222,23 @@ public class ContainerEFurnace extends Container {
 	    {
 	        if (par1 == 0)
 	        {
-	            this.tileEntity.furnaceCookTime = par2;
-	            FMLLog.info("Setting furnace cook time: " + par2);
+	            this.tileEntity.grindTimer = par2;
 	        }
 	        if (par1 == 1)
 	        {
+	            this.tileEntity.grindTime = par2;
+	        }
+	        if (par1 == 2)
+	        {
 	            this.tileEntity.energyLevel = par2;
-	            FMLLog.info("Setting energy level: " + par2);
+	        }
+	        if (par1 == 3)
+	        {
+	            this.tileEntity.batteryLevel = par2;
+	        }
+	        if (par1 == 4)
+	        {
+	            this.tileEntity.batteryMax = par2;
 	        }
 	    }
 	}
