@@ -8,24 +8,28 @@
  */
 package buildcraft.api.fuels;
 
-import buildcraft.api.core.StackWrapper;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
+
+import buildcraft.api.core.StackKey;
 
 public final class IronEngineCoolant {
 
 	public static Map<String, Coolant> liquidCoolants = new HashMap<String, Coolant>();
-	public static Map<StackWrapper, FluidStack> solidCoolants = new HashMap<StackWrapper, FluidStack>();
+	public static Map<StackKey, FluidStack> solidCoolants = new HashMap<StackKey, FluidStack>();
+
+	private IronEngineCoolant() {
+	}
 
 	public static FluidStack getFluidCoolant(ItemStack stack) {
-		return solidCoolants.get(new StackWrapper(stack));
+		return solidCoolants.get(new StackKey(stack));
 	}
 
 	public static Coolant getCoolant(ItemStack stack) {
@@ -36,10 +40,7 @@ public final class IronEngineCoolant {
 		return fluidStack != null && fluidStack.getFluid() != null ? liquidCoolants.get(fluidStack.getFluid().getName()) : null;
 	}
 
-	private IronEngineCoolant() {
-	}
-
-	public static interface Coolant {
+	public interface Coolant {
 
 		float getDegreesCoolingPerMB(float currentHeat);
 	}
@@ -65,22 +66,22 @@ public final class IronEngineCoolant {
 	 */
 	public static void addCoolant(final ItemStack stack, final FluidStack coolant) {
 		if (stack != null && stack.getItem() != null && coolant != null) {
-			solidCoolants.put(new StackWrapper(stack), coolant);
+			solidCoolants.put(new StackKey(stack), coolant);
 		}
 	}
 
 	/**
-	 * Adds a solid coolant like Ice Blocks. The FluidStack must contain a registered
-	 * Coolant Fluid or nothing will happen. You do not need to call this for
-	 * Fluid Containers.
-	 *
-	 * @param stack
+	 * Adds a solid coolant like Ice Blocks. The FluidStack must contain a
+	 * registered Coolant Fluid or nothing will happen. You do not need to call
+	 * this for Fluid Containers.
+	 * 
+	 * @param item
 	 * @param coolant
 	 */
 	public static void addCoolant(final Item item, final int metadata, final FluidStack coolant) {
 		addCoolant(new ItemStack(item, 1, metadata), coolant);
 	}
-	
+
 	public static void addCoolant(final Block block, final int metadata, final FluidStack coolant) {
 		addCoolant(new ItemStack(block, 1, metadata), coolant);
 	}

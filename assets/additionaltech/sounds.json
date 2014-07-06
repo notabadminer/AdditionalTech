@@ -1,3 +1,4 @@
 {
-   "inverterHum": {"category": "master","sounds": [{"name": "inverterHum","stream": false}]}
+   "inverterHum": {"category": "master","sounds": [{"name": "inverterHum","stream": true}]},
+   "grinder": {"category": "master","sounds": [{"name": "grinder","stream": true}]}
    }

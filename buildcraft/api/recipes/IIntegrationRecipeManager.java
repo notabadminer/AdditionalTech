@@ -9,6 +9,7 @@
 package buildcraft.api.recipes;
 
 import java.util.List;
+
 import net.minecraft.item.ItemStack;
 
 /**
@@ -18,7 +19,7 @@ import net.minecraft.item.ItemStack;
  */
 public interface IIntegrationRecipeManager {
 
-	public static interface IIntegrationRecipe {
+	public interface IIntegrationRecipe {
 
 		double getEnergyCost();
 
@@ -26,7 +27,9 @@ public interface IIntegrationRecipeManager {
 
 		boolean isValidInputB(ItemStack inputB);
 
-		ItemStack getOutputForInputs(ItemStack inputA, ItemStack inputB);
+		ItemStack getOutputForInputs(ItemStack inputA, ItemStack inputB, ItemStack[] components);
+
+		ItemStack[] getComponents();
 
 		ItemStack[] getExampleInputsA();
 

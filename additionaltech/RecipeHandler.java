@@ -65,14 +65,49 @@ public class RecipeHandler {
 			"IHI",
 			'I', Items.iron_ingot, 'H', RegistryHandler.itemHeatingElement
 		});
+		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.itemGrindstone), new Object[]{
+			"XSX",
+			"SXS",
+			"XSX",
+			'S', Blocks.stone
+		});
+		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.itemIronGrindstone), new Object[]{
+			"XIX",
+			"IXI",
+			"XIX",
+			'I', Items.iron_ingot
+		});
+		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.itemGrindstone), new Object[]{
+			"DID",
+			"IXI",
+			"DID",
+			'I', Items.iron_ingot, 'D', RegistryHandler.dustDiamond
+		});
+		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.blockGrinder), new Object[]{
+			"III",
+			"IXI",
+			"IGI",
+			'I', Items.iron_ingot, 'G', RegistryHandler.itemGrindstone
+		});
 		
 		//shapeless recipes
 		GameRegistry.addShapelessRecipe(new ItemStack(
-				RegistryHandler.plateQuartz), new Object[] { Items.quartz, 
-			Items.quartz, Items.quartz, Items.quartz });
+				RegistryHandler.plateQuartz), new Object[] { Items.quartz,
+				Items.quartz, Items.quartz, Items.quartz });
+		GameRegistry.addShapelessRecipe(new ItemStack(
+				RegistryHandler.plateCopper), new Object[] {
+				RegistryHandler.ingotCopper, RegistryHandler.ingotCopper,
+				RegistryHandler.ingotCopper, RegistryHandler.ingotCopper, });
 		
 		//smelting recipes
-		GameRegistry.addSmelting(new ItemStack(RegistryHandler.oreCopper), new ItemStack(RegistryHandler.ingotCopper), 0.8F);
+		GameRegistry.addSmelting(new ItemStack(RegistryHandler.oreCopper), new ItemStack(RegistryHandler.ingotCopper), 0.0F);
+		GameRegistry.addSmelting(new ItemStack(RegistryHandler.dustCopper), new ItemStack(RegistryHandler.ingotCopper), 0.0F);
+		GameRegistry.addSmelting(new ItemStack(RegistryHandler.dustDiamond), new ItemStack(Items.diamond), 0.0F);
+		GameRegistry.addSmelting(new ItemStack(RegistryHandler.dustGold), new ItemStack(Items.gold_ingot), 0.0F);
+		GameRegistry.addSmelting(new ItemStack(RegistryHandler.dustIron), new ItemStack(Items.iron_ingot), 0.0F);
+		GameRegistry.addSmelting(new ItemStack(RegistryHandler.dustObsidian), new ItemStack(Blocks.obsidian), 0.0F);
+		//GameRegistry.addSmelting(new ItemStack(RegistryHandler.dustSteel), new ItemStack(RegistryHandler.ingotSteel), 0.0F);
+		//GameRegistry.addSmelting(new ItemStack(RegistryHandler.dustTin), new ItemStack(RegistryHandler.ingotTin), 0.0F);
 
 	}
 }

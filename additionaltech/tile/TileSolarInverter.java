@@ -43,6 +43,8 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter, IPip
 	public ForgeDirection powerReceiverDirection = null;
 	public int panelCount = 0;
 	public int panelMax = 9;
+	public boolean isActive;
+    public boolean lastActive;
 	
 	public TileSolarInverter() {
 		super();
@@ -54,9 +56,22 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter, IPip
 		generatePower();
 		sendPower();
 		//if panel count is greater than zero, assume power is generated and hum
-		if (panelCount > 0 && worldObj.isRemote) {
-			worldObj.playSound(xCoord, yCoord, zCoord, "additionaltech:inverterHum", 0.7F, 1.0F, true);
+		if (worldObj.isRemote && worldObj.getBlockMetadata(xCoord, yCoord, zCoord) > 6) {
+			worldObj.playSound(xCoord, yCoord, zCoord, "additionaltech:inverterHum", 0.6F, 1.0F, true);
 		}
+		if (isActive != lastActive) {
+			lastActive = isActive;
+			updateBlock();
+		}
+	}
+	
+	private void updateBlock() {
+		//we set block meta plus or minus to change status burning/idle
+		int meta = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
+		if (isActive) {
+			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, meta + 6, 2);
+		} else
+			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, meta - 6, 2);
 	}
 	
 	public void onResetButtonPressed() {
@@ -247,6 +262,11 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter, IPip
 		} catch (Throwable ex2) {
 			energy = 0;
 		}
+		try {
+			lastActive = tagCompound.getBoolean("LastActive");
+		} catch (Throwable ex2) {
+			lastActive = false;
+		}
 	}
 
 	@Override
@@ -266,6 +286,7 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter, IPip
 		tagCompound.setInteger("SolarPanels", panelCount);
 		tagCompound.setInteger("MaxSolarPanels", panelMax);
 		tagCompound.setDouble("EnergyLevel", energy);
+		tagCompound.setBoolean("LastActive", lastActive);
 	}
 	
 	public void sendPacket(int button) {
@@ -303,7 +324,6 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter, IPip
 
 	@Override
 	public ItemStack getStackInSlotOnClosing(int var1) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -334,24 +354,15 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter, IPip
 
 	@Override
 	public void openInventory() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void closeInventory() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack stack) {
-		Item stackItem = stack.getItem();
-		if (slot == upgradeSlot0 || slot == upgradeSlot1 || slot == upgradeSlot2) {
-			return stackItem == RegistryHandler.itemInverterCore
-					|| stackItem == RegistryHandler.itemStageTwoCore
-					|| stackItem == RegistryHandler.itemStageThreeCore;
-		} else return false;
+		return true;
 	}
 
 }

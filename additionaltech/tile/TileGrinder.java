@@ -11,12 +11,12 @@ import buildcraft.api.power.PowerHandler.Type;
 import buildcraft.api.transport.IPipeConnection;
 import buildcraft.api.transport.IPipeConnection.ConnectOverride;
 import buildcraft.api.transport.IPipeTile.PipeType;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
@@ -36,6 +36,7 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
     public int energyLevel;
     public int maxEnergy = 2000;
     public int batteryLevel;
+    public float playerXP;
     public double batteryMax;
     public boolean currentState = false;
     public static final int slotInput = 0;
@@ -83,6 +84,10 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
 	public void updateEntity() {
 
 		boolean flag1 = false;
+		
+		if (worldObj.isRemote && worldObj.getBlockMetadata(xCoord, yCoord, zCoord) > 6) {
+			worldObj.playSound(xCoord, yCoord, zCoord, "additionaltech:grinder", 0.4F, 1.0F, true);
+		}
 	
 		if (worldObj.isRemote) {
 			return;
@@ -90,15 +95,17 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
 		
 		energyLevel = (int) powerHandler.getEnergyStored();
 		
-		if (this.canGrind() && energyLevel > energyCost) {
-			isActive = true;
-			grindTimer++;
-			powerHandler.useEnergy(energyCost, energyCost, true);
+		if (this.canGrind(slotOutput) || this.canGrind(slotOutput1)) {
+			if (energyLevel > energyCost) {
+				isActive = true;
+				grindTimer++;
+				powerHandler.useEnergy(energyCost, energyCost, true);
 
-			if (this.grindTimer >= this.grindTime) {
-				this.grindTimer = 0;
-				this.grindItem();
-				flag1 = true;
+				if (this.grindTimer >= this.grindTime) {
+					this.grindTimer = 0;
+					this.grindItem();
+					flag1 = true;
+				}
 			}
 		} else {
 			isActive = false;
@@ -125,9 +132,9 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
 	}
 	
 	/**
-     * Returns true if the furnace can smelt an item, i.e. has a source item, destination stack isn't full, etc.
+     * Returns true if the grinder can grind an item, i.e. has a source item, destination stack isn't full, etc.
      */
-    private boolean canGrind()
+    private boolean canGrind(int slot)
     {
         if (this.inventory[slotInput] == null)
         {
@@ -135,52 +142,71 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
         }
         else
         {
-        	ItemStack itemstack = GrinderRecipes.getGrindingResult(this.inventory[slotInput]);
-        	FMLLog.info("Grinding " + this.inventory[slotInput] + ": " + itemstack);
+        	ItemStack itemInStack = this.inventory[slotInput];
+        	Item itemForStack = itemInStack.getItem();
+        	ItemStack itemstack = GrinderRecipes.getGrindingResult(itemForStack);
             if (itemstack == null) return false;
-            if (this.inventory[slotOutput] == null) return true;
-            if (!this.inventory[slotOutput].isItemEqual(itemstack)) return false;
-            int result = inventory[slotOutput].stackSize + itemstack.stackSize;
-            return result <= getInventoryStackLimit() && result <= this.inventory[1].getMaxStackSize(); //Forge BugFix: Make it respect stack sizes properly.
+            if (this.inventory[slot] == null) return true;
+            if (!this.inventory[slot].isItemEqual(itemstack)) return false;
+            int result = inventory[slot].stackSize + itemstack.stackSize;
+            return result <= getInventoryStackLimit() && result <= this.inventory[slot].getMaxStackSize(); //Forge BugFix: Make it respect stack sizes properly.
         }
     }
 
     /**
-     * Turn one item from the furnace source stack into the appropriate smelted item in the furnace result stack
+     * Turn one item from the grinder source stack into the appropriate itemstack from grinder recipes
      */
-    public void grindItem()
-    {
-        if (this.canGrind())
-        {
-            ItemStack itemstack = GrinderRecipes.getGrindingResult(this.inventory[slotInput]);
-            int multiplier = GrinderRecipes.getGrindingMultiplier(this.inventory[slotInput]);
-            
-            if (multiplier > 1){
-            	itemstack.stackSize = multiplier;
-            }
+	public void grindItem() {
+		ItemStack itemInStack = this.inventory[slotInput];
+		Item itemForStack = itemInStack.getItem();
+		ItemStack itemstack = GrinderRecipes.getGrindingResult(itemForStack);
+		playerXP += GrinderRecipes.getExperience(itemForStack);
+		//FMLLog.info("Player XP: " + playerXP);
 
-            if (this.inventory[slotOutput] == null)
-            {
-                this.inventory[slotOutput] = itemstack.copy();
-            }
-            else if (this.inventory[slotOutput].getItem() == itemstack.getItem())
-            {
-                this.inventory[slotOutput].stackSize += itemstack.stackSize; // Forge BugFix: Results may have multiple items
-            }
+		// find the free slot. if this fails, get out of here.
+		int freeSlot;
+		if (canGrind(slotOutput)) {
+			freeSlot = slotOutput;
+		} else if (canGrind(slotOutput1)) {
+			freeSlot = slotOutput1;
+		} else {
+			return;
+		}
 
-            --this.inventory[slotInput].stackSize;
+		if (this.inventory[freeSlot] == null) {
+			this.inventory[freeSlot] = itemstack.copy();
+		} else if (this.inventory[freeSlot].getItem() == itemstack.getItem()) {
+			this.inventory[freeSlot].stackSize += itemstack.stackSize; 
+		}
 
-            if (this.inventory[slotInput].stackSize <= 0)
-            {
-                this.inventory[slotInput] = null;
-            }
-        }
-    }
+		--this.inventory[slotInput].stackSize;
+		damageGrindstones();
+
+		if (this.inventory[slotInput].stackSize <= 0) {
+			this.inventory[slotInput] = null;
+		}
+	}
+	
+	public void damageGrindstones() {
+		for (int slot = slotUpgrade1; slot <= slotUpgrade3; slot++) {
+			ItemStack stack = inventory[slot];
+			if (stack != null) {
+				int alter = stack.getItemDamage() + 1;
+				if(alter >= stack.getMaxDamage()) {
+					FMLLog.info("Max damage reached. Grindstone " + slot + " should be destroyed");
+					this.inventory[slot].stackSize = 0;
+					this.inventory[slot] = null;
+				}
+				stack.setItemDamage(alter);
+				this.inventory[slot] = null;
+				this.inventory[slot] = stack;
+			}
+		}
+	}
 
 	@Override
 	public World getWorld() {
-		// TODO Auto-generated method stub
-		return null;
+		return worldObj;
 	}
 
 	@Override
@@ -204,6 +230,7 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
                 itemstack = this.inventory[par1];
                 this.inventory[par1] = null;
                 return itemstack;
+                //TODO output playerXP here
             }
             else {
                 itemstack = this.inventory[par1].splitStack(par2);
@@ -213,6 +240,7 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
                 }
 
                 return itemstack;
+                //TODO and here
             }
         }
         else {
@@ -247,7 +275,7 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
 	@Override
 	public String getInventoryName()
     {
-        return "Energized Furnace";
+        return "Grinder";
     }
 
 	@Override
@@ -262,7 +290,7 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
 	
 	/**
      * Returns an integer between 0 and the passed value representing how close the current item is to being completely
-     * cooked
+     * destroyed
      */
     public int getCookProgressScaled(int progress) {
         return this.grindTimer * progress / this.grindTime;
@@ -280,24 +308,14 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
     
 	@Override
 	public void openInventory() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void closeInventory() {
-		// TODO Auto-generated method stub
 	}
 
 	public boolean isItemValidForSlot(int slot, ItemStack stack) {
-		Item stackItem = stack.getItem();
-		if (slot == slotUpgrade1 || slot == slotUpgrade2 || slot == slotUpgrade3) {
-			return stackItem == RegistryHandler.itemHeatingElement;
-		} else if (slot == slotBattery) {
-			return stackItem == Item.getItemFromBlock(RegistryHandler.blockESM);
-		} else if (slot == slotInput) {
 			return true;
-		} else return false;
 	}
 
 	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
@@ -322,6 +340,8 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
 		tagCompound.setTag("Inventory", itemList);
 		tagCompound.setInteger("EnergyLevel", energyLevel);
 		tagCompound.setBoolean("LastActive", lastActive);
+		tagCompound.setInteger("EnergyCost", energyCost);
+		tagCompound.setInteger("GrindTime", grindTime);
 	}
 
 	@Override
@@ -346,6 +366,16 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
 		} catch (Throwable ex2) {
 			lastActive = false;
 		}
+		try {
+			energyCost = tagCompound.getInteger("EnergyCost");
+		} catch (Throwable ex2) {
+			energyCost = 4;
+		}
+		try {
+			grindTime = tagCompound.getInteger("GrindTime");
+		} catch (Throwable ex2) {
+			grindTime = 200;
+		}
 	}
 	
 	public boolean batteryPresent() {
@@ -357,11 +387,13 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
 			NBTTagCompound tag = inventory[slotBattery].getTagCompound();
 			if (tag == null) {
 				//ESM must be new. We'll init NBT values
+				//we need to get tier first
+				int esmTier = inventory[slotBattery].getItemDamage();
 				tag = new NBTTagCompound();
 				tag.setInteger("EnergyLevel", 0);
 				tag.setDouble("MaxInput", 40);
 				tag.setDouble("MaxOutput", 40);
-				tag.setDouble("MaxEnergy", 20000);
+				tag.setDouble("MaxEnergy", esmTier == 0 ? 20000 : (esmTier == 1 ? 40000 : 60000));
 				inventory[slotBattery].setTagCompound(tag);
 			}
 			batteryLevel = tag.getInteger("EnergyLevel");
@@ -384,12 +416,14 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
 		if (!worldObj.isRemote) {
 			for (int i = 0; i < inventory.length; i++) {
 				ItemStack stack = inventory[i];
-				if (stack != null && stack.getItem() == RegistryHandler.itemHeatingElement) {
+				if (stack != null && (stack.getItem() == RegistryHandler.itemGrindstone 
+						|| stack.getItem() == RegistryHandler.itemIronGrindstone 
+						|| stack.getItem() == RegistryHandler.itemDiamondGrindstone)) {
 					upgradeCount++;
 				}
 			}
 			if (upgradeCount > 0) {
-				energyCost = (int) Math.pow(3,upgradeCount + 0.2);
+				energyCost = (int) Math.pow(2,upgradeCount + 0.2);
 				grindTime = (int) (200 / Math.pow(2,upgradeCount));
 			} else  this.grindTime = 200;
 		}

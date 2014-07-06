@@ -31,6 +31,7 @@ public class BlockSolarInverter extends BlockContainer {
 	@SideOnly(Side.CLIENT)
 	protected IIcon blockIcon;
 	protected IIcon blockIconFace;
+	protected IIcon blockIconFaceActive;
 
 	public BlockSolarInverter() {
 		super(new Material(MapColor.stoneColor));
@@ -46,12 +47,17 @@ public class BlockSolarInverter extends BlockContainer {
 	public void registerBlockIcons(IIconRegister par1IconRegister) {
 		blockIcon = par1IconRegister.registerIcon("additionaltech:Casing");
 		blockIconFace = par1IconRegister.registerIcon("additionaltech:SolarInverterFace");
+		blockIconFaceActive = par1IconRegister.registerIcon("additionaltech:SolarInverterFace");
 	}
 	
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(int side, int meta){
-		return meta == 0 && side == 3 ? blockIconFace : (side == meta ? blockIconFace : blockIcon);
+
+		if (meta > 5) {
+			return meta == 0 && side == 6 ? blockIconFaceActive : (side + 6 == meta ? blockIconFaceActive : blockIcon);
+		} else 
+			return meta == 0 && side == 3 ? blockIconFace : (side == meta ? blockIconFace : blockIcon);
 	}
 	
 	@Override

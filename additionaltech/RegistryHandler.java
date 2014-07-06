@@ -1,18 +1,30 @@
 package additionaltech;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.oredict.OreDictionary;
+import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.registry.GameRegistry;
+import additionaltech.blocks.BlockAlgae;
+import additionaltech.blocks.BlockAlgaeSlurry;
 import additionaltech.blocks.BlockEFurnace;
 import additionaltech.blocks.BlockESM;
 import additionaltech.blocks.BlockESMIICore;
 import additionaltech.blocks.BlockESMIIICore;
 import additionaltech.blocks.BlockGrinder;
 import additionaltech.blocks.BlockOreCopper;
+import additionaltech.blocks.BlockPhotobioreactor;
 import additionaltech.blocks.BlockSolarInverter;
 import additionaltech.blocks.BlockSolarPanel;
 import additionaltech.items.ItemBlockESM;
+import additionaltech.items.ItemBucketSlurry;
+import additionaltech.items.ItemDiamondGrindstone;
 import additionaltech.items.ItemDustCopper;
 import additionaltech.items.ItemDustDiamond;
 import additionaltech.items.ItemDustGold;
@@ -20,9 +32,11 @@ import additionaltech.items.ItemDustIron;
 import additionaltech.items.ItemDustObsidian;
 import additionaltech.items.ItemDustSteel;
 import additionaltech.items.ItemDustTin;
+import additionaltech.items.ItemGrindstone;
 import additionaltech.items.ItemHeatingElement;
 import additionaltech.items.ItemIngotCopper;
 import additionaltech.items.ItemInverterCore;
+import additionaltech.items.ItemIronGrindstone;
 import additionaltech.items.ItemPlateCopper;
 import additionaltech.items.ItemPlateQuartz;
 import additionaltech.items.ItemStageThreeCore;
@@ -37,7 +51,10 @@ public class RegistryHandler {
     public static Block blockGrinder;
     public static Block blockESMIICore;
     public static Block blockESMIIICore;
+    public static Block blockPhotobioreactor;
     public static Block oreCopper;
+    public static Block blockAlgaeSlurry;
+    public static Block blockAlgae;
 
     public static Item dustCopper;
     public static Item dustDiamond;
@@ -55,6 +72,13 @@ public class RegistryHandler {
     public static Item itemStageThreeCore;
     public static Item itemHeatingElement;
     public static Item itemBlockESM;
+    public static Item itemGrindstone;
+    public static Item itemIronGrindstone;
+    public static Item itemDiamondGrindstone;
+    public static Item itemBucketSlurry;
+    
+    public static Fluid algaeSlurry;
+
 	
 	public static void registerBlocks(){
 		blockSolarPanel = new BlockSolarPanel().setBlockName("blockSolarPanel");
@@ -64,6 +88,8 @@ public class RegistryHandler {
     	blockESMIICore = new BlockESMIICore().setBlockName("blockESMIICore");
     	blockESMIIICore = new BlockESMIIICore().setBlockName("blockESMIIICore");
     	blockGrinder = new BlockGrinder().setBlockName("blockGrinder");
+    	blockPhotobioreactor = new BlockPhotobioreactor().setBlockName("blockPhotobioreactor");
+    	blockAlgae = new BlockAlgae().setBlockName("blockAlgae");
     	oreCopper = new BlockOreCopper().setBlockName("oreCopper");
     	
     	GameRegistry.registerBlock(blockSolarPanel, blockSolarPanel.getUnlocalizedName());
@@ -73,6 +99,8 @@ public class RegistryHandler {
     	GameRegistry.registerBlock(blockESMIICore, blockESMIICore.getUnlocalizedName());
     	GameRegistry.registerBlock(blockESMIIICore, blockESMIIICore.getUnlocalizedName());
     	GameRegistry.registerBlock(blockGrinder, blockGrinder.getUnlocalizedName());
+    	GameRegistry.registerBlock(blockPhotobioreactor, blockPhotobioreactor.getUnlocalizedName());
+    	GameRegistry.registerBlock(blockAlgae, blockAlgae.getUnlocalizedName());    	
     	GameRegistry.registerBlock(oreCopper, oreCopper.getUnlocalizedName());
     	OreDictionary.registerOre("oreCopper", oreCopper);
 	}
@@ -93,6 +121,9 @@ public class RegistryHandler {
     	itemStageTwoCore = new ItemStageTwoCore().setUnlocalizedName("itemStageTwoCore");
     	itemStageThreeCore = new ItemStageThreeCore().setUnlocalizedName("itemStageThreeCore");
     	itemHeatingElement = new ItemHeatingElement().setUnlocalizedName("itemHeatingElement");
+    	itemGrindstone = new ItemGrindstone().setUnlocalizedName("itemGrindstone");
+    	itemIronGrindstone = new ItemIronGrindstone().setUnlocalizedName("itemIronGrindstone");
+    	itemDiamondGrindstone = new ItemDiamondGrindstone().setUnlocalizedName("itemDiamondGrindstone");
     	
     	GameRegistry.registerItem(ingotCopper, ingotCopper.getUnlocalizedName());
     	OreDictionary.registerOre("ingotCopper", ingotCopper);
@@ -120,6 +151,25 @@ public class RegistryHandler {
     	GameRegistry.registerItem(itemStageTwoCore, itemStageTwoCore.getUnlocalizedName());
     	GameRegistry.registerItem(itemStageThreeCore, itemStageThreeCore.getUnlocalizedName());
     	GameRegistry.registerItem(itemHeatingElement, itemHeatingElement.getUnlocalizedName());
+    	GameRegistry.registerItem(itemGrindstone, itemGrindstone.getUnlocalizedName());
+    	GameRegistry.registerItem(itemIronGrindstone, itemIronGrindstone.getUnlocalizedName());
+    	GameRegistry.registerItem(itemDiamondGrindstone, itemDiamondGrindstone.getUnlocalizedName());
+	}
+	
+	public static void registerFluids() {
+		Fluid algaeslurry = new Fluid("algaeslurry").setUnlocalizedName("agaeslurry");
+		FluidRegistry.registerFluid(algaeslurry);
+		blockAlgaeSlurry = new BlockAlgaeSlurry(algaeslurry, Material.water).setBlockName("blockAlgaeSlurry");
+		GameRegistry.registerBlock(blockAlgaeSlurry, blockAlgaeSlurry.getUnlocalizedName());
+		algaeslurry.setUnlocalizedName(blockAlgaeSlurry.getUnlocalizedName());
+		algaeslurry.setIcons(RegistryHandler.blockAlgaeSlurry.getIcon(0,0),RegistryHandler.blockAlgaeSlurry.getIcon(2,0));
+		FMLLog.info("still icon: " + algaeslurry.getIcon());
+
+		
+		itemBucketSlurry = new ItemBucketSlurry().setUnlocalizedName("itemBucketSlurry");
+		itemBucketSlurry.setContainerItem(Items.bucket);
+		GameRegistry.registerItem(itemBucketSlurry, itemBucketSlurry.getUnlocalizedName());
+		FluidContainerRegistry.registerFluidContainer(FluidRegistry.getFluidStack(algaeslurry.getName(), FluidContainerRegistry.BUCKET_VOLUME), new ItemStack(itemBucketSlurry), new ItemStack(Items.bucket));
 	}
 
 }

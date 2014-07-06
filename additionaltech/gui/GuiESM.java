@@ -13,6 +13,7 @@ import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.GL11;
 
+import additionaltech.inventory.ContainerESM;
 import additionaltech.tile.TileESM;
 
 public class GuiESM extends GuiContainer {

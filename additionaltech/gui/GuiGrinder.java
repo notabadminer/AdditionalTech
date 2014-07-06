@@ -12,6 +12,7 @@ import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.GL11;
 
+import additionaltech.inventory.ContainerGrinder;
 import additionaltech.tile.TileGrinder;
 import cpw.mods.fml.common.FMLLog;
 

@@ -63,7 +63,7 @@ public class BlockGrinder extends BlockContainer{
 	{
 		int meta = world.getBlockMetadata(x, y, z);
 
-		return meta > 5 ? 15 : 0;
+		return meta > 5 ? 7 : 0;
 	}
 	
 	@Override

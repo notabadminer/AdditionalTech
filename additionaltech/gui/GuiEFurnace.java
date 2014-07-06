@@ -12,6 +12,7 @@ import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.GL11;
 
+import additionaltech.inventory.ContainerEFurnace;
 import additionaltech.tile.TileEFurnace;
 import cpw.mods.fml.common.FMLLog;
 

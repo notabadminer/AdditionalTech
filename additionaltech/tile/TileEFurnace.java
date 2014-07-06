@@ -316,6 +316,7 @@ public class TileEFurnace extends TileEntity implements IPipeConnection, IPowerR
 		tagCompound.setTag("Inventory", itemList);
 		tagCompound.setInteger("EnergyLevel", energyLevel);
 		tagCompound.setBoolean("LastActive", lastActive);
+		tagCompound.setInteger("CookTime", furnaceCookTime);
 	}
 
 	@Override
@@ -340,6 +341,11 @@ public class TileEFurnace extends TileEntity implements IPipeConnection, IPowerR
 		} catch (Throwable ex2) {
 			lastActive = false;
 		}
+		try {
+			furnaceCookTime = tagCompound.getInteger("CookTime");
+		} catch (Throwable ex2) {
+			furnaceCookTime = 200;
+		}
 	}
 	
 	public boolean batteryPresent() {
@@ -351,11 +357,13 @@ public class TileEFurnace extends TileEntity implements IPipeConnection, IPowerR
 			NBTTagCompound tag = inventory[slotBattery].getTagCompound();
 			if (tag == null) {
 				//ESM must be new. We'll init NBT values
+				//we need to get tier first
+				int esmTier = inventory[slotBattery].getItemDamage();
 				tag = new NBTTagCompound();
 				tag.setInteger("EnergyLevel", 0);
 				tag.setDouble("MaxInput", 40);
 				tag.setDouble("MaxOutput", 40);
-				tag.setDouble("MaxEnergy", 20000);
+				tag.setDouble("MaxEnergy", esmTier == 0 ? 20000 : (esmTier == 1 ? 40000 : 60000));
 				inventory[slotBattery].setTagCompound(tag);
 			}
 			batteryLevel = tag.getInteger("EnergyLevel");
