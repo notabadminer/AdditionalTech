@@ -53,6 +53,30 @@ public class RecipeHandler {
 				"IGI",
 				'G', Blocks.glass, 'I', RegistryHandler.ingotCopper, 'R', Blocks.redstone_block
 			});
+		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.blockESM, 1, 1), new Object[]{
+			"IGI",
+			"GCG",
+			"IGI",
+			'G', Blocks.glass, 'I', Items.iron_ingot, 'C', RegistryHandler.blockESMIICore
+		});
+		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.blockESM, 1, 2), new Object[]{
+			"IGI",
+			"GCG",
+			"IGI",
+			'G', Blocks.glass, 'I', Items.gold_ingot, 'C', RegistryHandler.blockESMIIICore
+		});
+		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.blockESMIICore), new Object[]{
+			"GRG",
+			"RGR",
+			"GRG",
+			'G', RegistryHandler.dustGold, 'R', Items.redstone
+		});
+		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.blockESMIIICore), new Object[]{
+			"DRD",
+			"RDR",
+			"DRD",
+			'D', RegistryHandler.dustDiamond, 'R', Items.redstone
+		});
 		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.itemHeatingElement), new Object[]{
 			"III",
 			"PPP",
@@ -77,7 +101,7 @@ public class RecipeHandler {
 			"XIX",
 			'I', Items.iron_ingot
 		});
-		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.itemGrindstone), new Object[]{
+		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.itemDiamondGrindstone), new Object[]{
 			"DID",
 			"IXI",
 			"DID",

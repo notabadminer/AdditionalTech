@@ -162,8 +162,7 @@ public class RegistryHandler {
 		blockAlgaeSlurry = new BlockAlgaeSlurry(algaeslurry, Material.water).setBlockName("blockAlgaeSlurry");
 		GameRegistry.registerBlock(blockAlgaeSlurry, blockAlgaeSlurry.getUnlocalizedName());
 		algaeslurry.setUnlocalizedName(blockAlgaeSlurry.getUnlocalizedName());
-		algaeslurry.setIcons(RegistryHandler.blockAlgaeSlurry.getIcon(0,0),RegistryHandler.blockAlgaeSlurry.getIcon(2,0));
-		FMLLog.info("still icon: " + algaeslurry.getIcon());
+		//algaeslurry.setIcons(RegistryHandler.blockAlgaeSlurry.getIcon(0,0),RegistryHandler.blockAlgaeSlurry.getIcon(2,0));
 
 		
 		itemBucketSlurry = new ItemBucketSlurry().setUnlocalizedName("itemBucketSlurry");
