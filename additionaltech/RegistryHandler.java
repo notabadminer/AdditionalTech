@@ -27,9 +27,11 @@ import additionaltech.items.ItemBucketSlurry;
 import additionaltech.items.ItemDiamondGrindstone;
 import additionaltech.items.ItemDustCopper;
 import additionaltech.items.ItemDustDiamond;
+import additionaltech.items.ItemDustGlass;
 import additionaltech.items.ItemDustGold;
 import additionaltech.items.ItemDustIron;
 import additionaltech.items.ItemDustObsidian;
+import additionaltech.items.ItemDustQuartz;
 import additionaltech.items.ItemDustSteel;
 import additionaltech.items.ItemDustTin;
 import additionaltech.items.ItemGrindstone;
@@ -37,8 +39,7 @@ import additionaltech.items.ItemHeatingElement;
 import additionaltech.items.ItemIngotCopper;
 import additionaltech.items.ItemInverterCore;
 import additionaltech.items.ItemIronGrindstone;
-import additionaltech.items.ItemPlateCopper;
-import additionaltech.items.ItemPlateQuartz;
+import additionaltech.items.ItemMotor;
 import additionaltech.items.ItemStageThreeCore;
 import additionaltech.items.ItemStageTwoCore;
 import additionaltech.items.ItemWireCopper;
@@ -63,10 +64,10 @@ public class RegistryHandler {
     public static Item dustObsidian;
     public static Item dustSteel;
     public static Item dustTin;
+    public static Item dustQuartz;
+    public static Item dustGlass;
     public static Item ingotCopper;
-    public static Item plateCopper;
     public static Item wireCopper;
-    public static Item plateQuartz;
     public static Item itemInverterCore;
     public static Item itemStageTwoCore;
     public static Item itemStageThreeCore;
@@ -75,6 +76,7 @@ public class RegistryHandler {
     public static Item itemGrindstone;
     public static Item itemIronGrindstone;
     public static Item itemDiamondGrindstone;
+    public static Item itemMotor;
     public static Item itemBucketSlurry;
     
     public static Fluid algaeSlurry;
@@ -114,9 +116,10 @@ public class RegistryHandler {
 		dustObsidian = new ItemDustObsidian().setUnlocalizedName("dustObsidian");
 		dustSteel = new ItemDustSteel().setUnlocalizedName("dustSteel");
 		dustTin = new ItemDustTin().setUnlocalizedName("dustTin");
+		dustQuartz = new ItemDustQuartz().setUnlocalizedName("dustQuartz");
+		dustGlass = new ItemDustGlass().setUnlocalizedName("dustGlass");
+
     	wireCopper = new ItemWireCopper().setUnlocalizedName("wireCopper");
-    	plateCopper = new ItemPlateCopper().setUnlocalizedName("plateCopper");
-    	plateQuartz = new ItemPlateQuartz().setUnlocalizedName("plateQuartz");
     	itemInverterCore = new ItemInverterCore().setUnlocalizedName("itemInverterCore");
     	itemStageTwoCore = new ItemStageTwoCore().setUnlocalizedName("itemStageTwoCore");
     	itemStageThreeCore = new ItemStageThreeCore().setUnlocalizedName("itemStageThreeCore");
@@ -124,6 +127,7 @@ public class RegistryHandler {
     	itemGrindstone = new ItemGrindstone().setUnlocalizedName("itemGrindstone");
     	itemIronGrindstone = new ItemIronGrindstone().setUnlocalizedName("itemIronGrindstone");
     	itemDiamondGrindstone = new ItemDiamondGrindstone().setUnlocalizedName("itemDiamondGrindstone");
+    	itemMotor = new ItemMotor().setUnlocalizedName("itemMotor");
     	
     	GameRegistry.registerItem(ingotCopper, ingotCopper.getUnlocalizedName());
     	OreDictionary.registerOre("ingotCopper", ingotCopper);
@@ -140,13 +144,13 @@ public class RegistryHandler {
     	OreDictionary.registerOre("dustSteel", dustSteel);
     	GameRegistry.registerItem(dustTin, dustTin.getUnlocalizedName());
     	OreDictionary.registerOre("dustTin", dustTin);
+    	GameRegistry.registerItem(dustQuartz, dustQuartz.getUnlocalizedName());
+    	OreDictionary.registerOre("dustQuartz", dustQuartz);
+    	GameRegistry.registerItem(dustGlass, dustGlass.getUnlocalizedName());
+    	OreDictionary.registerOre("dustGlass", dustGlass);
     	
     	GameRegistry.registerItem(wireCopper, wireCopper.getUnlocalizedName());
     	OreDictionary.registerOre("wireCopper", wireCopper);
-    	GameRegistry.registerItem(plateCopper, plateCopper.getUnlocalizedName());
-    	OreDictionary.registerOre("plateCopper", plateCopper);
-    	GameRegistry.registerItem(plateQuartz, plateQuartz.getUnlocalizedName());
-    	OreDictionary.registerOre("plateQuartz", plateQuartz);
     	GameRegistry.registerItem(itemInverterCore, itemInverterCore.getUnlocalizedName());
     	GameRegistry.registerItem(itemStageTwoCore, itemStageTwoCore.getUnlocalizedName());
     	GameRegistry.registerItem(itemStageThreeCore, itemStageThreeCore.getUnlocalizedName());
@@ -154,6 +158,7 @@ public class RegistryHandler {
     	GameRegistry.registerItem(itemGrindstone, itemGrindstone.getUnlocalizedName());
     	GameRegistry.registerItem(itemIronGrindstone, itemIronGrindstone.getUnlocalizedName());
     	GameRegistry.registerItem(itemDiamondGrindstone, itemDiamondGrindstone.getUnlocalizedName());
+    	GameRegistry.registerItem(itemMotor, itemMotor.getUnlocalizedName());
 	}
 	
 	public static void registerFluids() {

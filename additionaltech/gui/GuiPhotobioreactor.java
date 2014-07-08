@@ -86,8 +86,11 @@ public class GuiPhotobioreactor extends GuiContainer {
 		int guiHeight = (height - ySize) / 2;
 		this.drawTexturedModalRect(guiWidth, guiHeight, 0, 0, xSize, ySize);
 
-       	int waterLevel = this.tileEntity.getWaterLevelScaled(57);
-       	this.drawTexturedModalRect(guiWidth + 70, guiHeight + 73 - waterLevel, 176, 0, 16, waterLevel);
+       	int waterLevel = this.tileEntity.getWaterLevelScaled(58);
+       	this.drawTexturedModalRect(guiWidth + 70, guiHeight + 74 - waterLevel, 176, 58, 16, waterLevel);
+       	
+       	int slurryLevel = this.tileEntity.getSlurryLevelScaled(58);
+       	this.drawTexturedModalRect(guiWidth + 88, guiHeight + 74 - slurryLevel, 176, 0, 16, slurryLevel);
        	
        	//draw scale in front of everything
        	this.drawTexturedModalRect(guiWidth + 70, guiHeight + 16, 192, 0, 16, 57);

@@ -136,8 +136,9 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
      */
     private boolean canGrind(int slot)
     {
-        if (this.inventory[slotInput] == null)
-        {
+		if (this.inventory[slotInput] == null
+				|| (this.inventory[slotUpgrade1] == null
+						&& this.inventory[slotUpgrade2] == null && this.inventory[slotUpgrade3] == null))        {
             return false;
         }
         else
@@ -194,7 +195,7 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
 				int alter = stack.getItemDamage() + 1;
 				if(alter >= stack.getMaxDamage()) {
 					FMLLog.info("Max damage reached. Grindstone " + slot + " should be destroyed");
-					this.inventory[slot].stackSize = 0;
+					this.inventory[slot].stackSize--;
 					this.inventory[slot] = null;
 				}
 				stack.setItemDamage(alter);
@@ -357,7 +358,7 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
 			}
 		}
 		try {
-			energyLevel = tagCompound.getInteger("EnergyLevel");
+			powerHandler.addEnergy(tagCompound.getInteger("EnergyLevel"));
 		} catch (Throwable ex2) {
 			energyLevel = 0;
 		}

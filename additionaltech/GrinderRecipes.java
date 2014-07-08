@@ -31,6 +31,9 @@ public class GrinderRecipes {
 		addGrinding(Item.getItemFromBlock(Blocks.quartz_ore), new ItemStack(Items.quartz, 2), 1.0F);
 		addGrinding(Items.bone, new ItemStack(Items.dye, 4, 15), 0.3F);
 		addGrinding(Item.getItemFromBlock(Blocks.wool), new ItemStack(Items.string, 4), 0.3F);
+		addGrinding(Items.quartz, new ItemStack(RegistryHandler.dustQuartz), 0.5F);
+		addGrinding(Item.getItemFromBlock(Blocks.glass), new ItemStack(RegistryHandler.dustGlass), 0.5F);
+
 	}
 	
 	public static void initGrinderRecipes() {

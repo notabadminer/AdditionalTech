@@ -29,40 +29,71 @@ public class TilePhotobioreactor extends TileEntity implements IPipeConnection, 
 		public static int slotOutput = 1;
 		public int waterLevel;
 		public int slurryLevel;
+		public int counter;
+		public int totalGrowth = 1000;
 
 		public void TileEntityPhotobioreactor() {
 			inventory = new ItemStack[2];
 		}
 		
 		@Override
-		public void updateEntity() {
+		public void updateEntity() {		
+			if (worldObj.isRemote) {
+				return;
+			}
 			waterLevel = watertank.getFluidAmount();
 			slurryLevel = slurrytank.getFluidAmount();
-			/*if (worldObj.canBlockSeeTheSky(xCoord, yCoord, zCoord) && worldObj.isDaytime()) {
-				int algaeGrowth = ((slurrytank.getFluidAmount() + 1000) / 10000);
-				if (watertank.getFluidAmount() > 0) {
-					watertank.drain(algaeGrowth, true);
-					slurrytank.fill(FluidRegistry.getFluidStack("algaeslurry",algaeGrowth), true);
-				}
-			}*/
+			counter++;
+			if (counter == 10) {
+				growAlgae();
+				counter = 0;
+			}
 		}
 		
+		public void growAlgae() {
+			if (/*worldObj.canBlockSeeTheSky(xCoord, yCoord, zCoord) &&*/ worldObj.isDaytime()) {
+				FMLLog.info("we can grow");
+				int algaeGrowth = (slurrytank.getFluidAmount() / 1000);
+				FMLLog.info("growth: " + algaeGrowth);
+				if (watertank.getFluidAmount() > 0 && inventory[slotInput] != null) {
+					if (inventory[slotInput].getItem() == Items.sugar) {
+						totalGrowth += algaeGrowth;
+						watertank.drain(algaeGrowth, true);
+						slurrytank.fill(FluidRegistry.getFluidStack("algaeslurry",algaeGrowth), true);
+						if (totalGrowth >= 1000) {
+							totalGrowth = 0;
+							inventory[slotInput].stackSize--;
+							if (inventory[slotInput].stackSize == 0) {
+								inventory[slotInput] = null;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		
 		public void processInputs(int slot){
-			//TODO process water and algae buckets
 			if (worldObj.isRemote) {
 				return;
 			}
 			if (inventory[slot].getItem() == Items.water_bucket) {
 				inventory[slotInput] = null;
-				watertank.fill(new FluidStack(FluidRegistry.WATER, 1000),true);
+				int used = watertank.fill(new FluidStack(FluidRegistry.WATER, 1000),true);
 				inventory[slotOutput] = new ItemStack(Items.bucket);
-				FMLLog.info("water level: " + watertank.getFluidAmount());
+			}
+			if (inventory[slot].getItem() == RegistryHandler.itemBucketSlurry) {
+				inventory[slotInput] = null;
+				int used = slurrytank.fill(new FluidStack(FluidRegistry.getFluid("algaeslurry"), 1000),true);
+				inventory[slotOutput] = new ItemStack(Items.bucket);
 			}
 		}
 
 		@Override
-		public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
-			return 0;
+		public int fill(ForgeDirection from, FluidStack incoming, boolean doFill) {
+			int used = watertank.fill(incoming, doFill);
+			incoming.amount -= used;
+			return used;
 		}
 
 		@Override
@@ -79,18 +110,13 @@ public class TilePhotobioreactor extends TileEntity implements IPipeConnection, 
 
 		@Override
 		public boolean canFill(ForgeDirection from, Fluid fluid) {
-			// TODO fill water tank only
-			if (!worldObj.isRemote) {
-	        	
-	            return true;
-	    	}
-	    	return false;
+			return true;
 		}
 
 		@Override
 		public boolean canDrain(ForgeDirection from, Fluid fluid) {
 			//TODO drain algae slurry down to 1000MB
-			return false;
+			return true;
 		}
 
 		@Override
@@ -99,7 +125,6 @@ public class TilePhotobioreactor extends TileEntity implements IPipeConnection, 
 		}
 		
 		public int getWaterLevelScaled(int scale) {
-	        FMLLog.info("waterlevel " + waterLevel);
 	        return this.waterLevel * scale / watertank.getCapacity();
 	    }
 		
@@ -164,7 +189,6 @@ public class TilePhotobioreactor extends TileEntity implements IPipeConnection, 
 	        {
 	            stack.stackSize = this.getInventoryStackLimit();
 	        }
-	        //TODO process water and algae buckets when inserted
 	        if (slot == slotInput) {
 		        processInputs(slot);
 	        }
@@ -249,12 +273,12 @@ public class TilePhotobioreactor extends TileEntity implements IPipeConnection, 
 				}
 			}
 			try {
-				waterLevel = tagCompound.getInteger("WaterLevel");
+				watertank.fill(new FluidStack( FluidRegistry.WATER, tagCompound.getInteger("WaterLevel")), true);
 			} catch (Throwable ex2) {
 				waterLevel = 0;
 			}
 			try {
-				slurryLevel = tagCompound.getInteger("SlurryLevel");
+				slurrytank.fill(new FluidStack(FluidRegistry.getFluid("algaeslurry"), tagCompound.getInteger("SlurryLevel")), true);
 			} catch (Throwable ex2) {
 				slurryLevel = 0;
 			}

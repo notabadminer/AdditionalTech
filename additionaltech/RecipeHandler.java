@@ -79,9 +79,9 @@ public class RecipeHandler {
 		});
 		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.itemHeatingElement), new Object[]{
 			"III",
-			"PPP",
+			"QQQ",
 			"III",
-			'I', RegistryHandler.ingotCopper, 'R', RegistryHandler.plateQuartz
+			'I', RegistryHandler.ingotCopper, 'Q', Items.quartz
 		});
 		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.blockEFurnace), new Object[]{
 			"III",
@@ -107,21 +107,25 @@ public class RecipeHandler {
 			"DID",
 			'I', Items.iron_ingot, 'D', RegistryHandler.dustDiamond
 		});
+		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.itemMotor), new Object[]{
+			"RWR",
+			"WIW",
+			"RWR",
+			'R', Items.redstone, 'W', RegistryHandler.wireCopper, 'I', Items.iron_ingot
+		});
 		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.blockGrinder), new Object[]{
 			"III",
 			"IXI",
-			"IGI",
-			'I', Items.iron_ingot, 'G', RegistryHandler.itemGrindstone
+			"IMI",
+			'I', Items.iron_ingot, 'M', RegistryHandler.itemMotor
 		});
 		
 		//shapeless recipes
 		GameRegistry.addShapelessRecipe(new ItemStack(
-				RegistryHandler.plateQuartz), new Object[] { Items.quartz,
-				Items.quartz, Items.quartz, Items.quartz });
-		GameRegistry.addShapelessRecipe(new ItemStack(
-				RegistryHandler.plateCopper), new Object[] {
-				RegistryHandler.ingotCopper, RegistryHandler.ingotCopper,
-				RegistryHandler.ingotCopper, RegistryHandler.ingotCopper, });
+				RegistryHandler.itemBucketSlurry), new ItemStack(
+				Items.wheat_seeds), new ItemStack(Items.sugar),
+				new ItemStack(Items.water_bucket)
+		);
 		
 		//smelting recipes
 		GameRegistry.addSmelting(new ItemStack(RegistryHandler.oreCopper), new ItemStack(RegistryHandler.ingotCopper), 0.0F);

@@ -3,11 +3,11 @@ package additionaltech.items;
 import net.minecraft.item.Item;
 import additionaltech.AdditionalTech;
 
-public class ItemPlateQuartz extends Item {
+public class ItemMotor extends Item {
 
-	public ItemPlateQuartz() {
+	public ItemMotor() {
 		super();
-		setTextureName("additionaltech:QuartzPlate");
+		setTextureName("additionaltech:Motor");
 		setCreativeTab(AdditionalTech.tabAdditionalTech);
 	}
 }

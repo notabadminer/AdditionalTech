@@ -332,7 +332,7 @@ public class TileEFurnace extends TileEntity implements IPipeConnection, IPowerR
 			}
 		}
 		try {
-			energyLevel = tagCompound.getInteger("EnergyLevel");
+			powerHandler.addEnergy(tagCompound.getInteger("EnergyLevel"));
 		} catch (Throwable ex2) {
 			energyLevel = 0;
 		}
