@@ -45,7 +45,6 @@ public class GuiPhotobioreactor extends GuiContainer {
 		if (mouseX > boxX && mouseX < boxX + sizeX) 
 		{
 			if (mouseY > boxY && mouseY < boxY + sizeY) {
-				//do something!!!!
 				List list = new ArrayList();
 				list.add(tileEntity.waterLevel + " MB");
 				this.drawHoveringText(list, (int) mouseX - k, (int) mouseY - l, fontRendererObj);
@@ -63,7 +62,6 @@ public class GuiPhotobioreactor extends GuiContainer {
 
 		if (mouseX > boxX && mouseX < boxX + sizeX) {
 			if (mouseY > boxY && mouseY < boxY + sizeY) {
-				// do something!!!!
 				List list = new ArrayList();
 				list.add(tileEntity.slurryLevel + " MB");
 				this.drawHoveringText(list, (int) mouseX - k, (int) mouseY - l, fontRendererObj);

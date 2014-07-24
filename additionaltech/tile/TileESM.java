@@ -3,7 +3,9 @@ package additionaltech.tile;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.relauncher.Side;
 import additionaltech.AdditionalTech;
-import additionaltech.net.PacketESM;
+import additionaltech.net.ESMButtonMessage;
+import additionaltech.net.ESMTEMessage;
+import additionaltech.net.GrinderTEMessage;
 import buildcraft.api.power.IPowerEmitter;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerHandler;
@@ -18,6 +20,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
@@ -28,9 +33,9 @@ public class TileESM extends TileEntity implements IPipeConnection, IPowerEmitte
 	public PowerHandler powerHandler;
 	private ItemStack[] inventoryItemStacks = new ItemStack[1];
     public int energyLevel;
-    public double maxInput = 40;
-    public double maxOutput = 40;
-	public double maxEnergy = 20000;
+    public int maxInput = 40;
+    public int maxOutput = 40;
+	public int maxEnergy = 20000;
 	public ForgeDirection powerReceiverDirection = null;
 	public boolean isRedstonePowered = false;
 
@@ -50,12 +55,7 @@ public class TileESM extends TileEntity implements IPipeConnection, IPowerEmitte
 		if (!isRedstonePowered) {
 			sendPower();
 		}
-		
-		if (worldObj.isRemote) {
-			return;
-		}
-		
-		energyLevel = (int) powerHandler.getEnergyStored();
+		if (!worldObj.isRemote) energyLevel = (int) powerHandler.getEnergyStored();
 	}
 
 	/* IPIPECONNECTION */
@@ -114,11 +114,14 @@ public class TileESM extends TileEntity implements IPipeConnection, IPowerEmitte
 	}
 	
 	public void configurePowerHandler(int buttonId) {
+		if (worldObj.isRemote) return;
 		if (buttonId == 0) {
+			FMLLog.info("button 0 pressed");
 			if (maxInput > 0) {
 				maxInput--;
 			}
 		} else if (buttonId == 1) {
+			FMLLog.info("button 1 pressed");
 			if (maxInput < 40) {
 				maxInput++;
 			}
@@ -131,7 +134,7 @@ public class TileESM extends TileEntity implements IPipeConnection, IPowerEmitte
 				maxOutput++;
 			}
 		} 
-		powerHandler.configure(10, maxInput, 25, maxEnergy);
+		powerHandler.configure(Math.min(10, maxInput), maxInput, 25, maxEnergy);
 	}
 	
 	public void checkRedstonePower() {
@@ -147,15 +150,9 @@ public class TileESM extends TileEntity implements IPipeConnection, IPowerEmitte
 		return worldObj;
 	}
 
-    public int getEnergyLevelScaled(int scale) {
-        return this.energyLevel * scale / (int) maxEnergy;
+    public double getEnergyLevelScaled(int scale) {
+        return this.energyLevel * scale / maxEnergy;
     }
-    
-    public void sendPacket(int button) {
-		PacketESM packet = new PacketESM(xCoord, yCoord,
-				zCoord, button);
-		AdditionalTech.packetPipeline.sendToServer(packet);
-	}
     
 	@Override
 	public void openInventory() {
@@ -175,40 +172,55 @@ public class TileESM extends TileEntity implements IPipeConnection, IPowerEmitte
 						zCoord + 0.5) < 64;
 	}
 	
+	public void sendPacket(int button) {
+			AdditionalTech.snw.sendToServer(new ESMButtonMessage(xCoord, yCoord, zCoord, button));
+	}
+	
+	@Override
+    public Packet getDescriptionPacket() {
+        return AdditionalTech.snw.getPacketFrom(new ESMTEMessage(this));
+    }
+	
+	public void updateTE() {
+		 worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+	}
+	
 	@Override
 	public void writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		NBTTagCompound tag = new NBTTagCompound();
+		tagCompound.setInteger("MaxInput", maxInput);
+		tagCompound.setInteger("MaxOutput", maxOutput);
+		tagCompound.setInteger("MaxEnergy", maxEnergy);
 		tagCompound.setInteger("EnergyLevel", energyLevel);
-		tagCompound.setDouble("MaxInput", maxInput);
-		tagCompound.setDouble("MaxOutput", maxOutput);
-		tagCompound.setDouble("MaxEnergy", maxEnergy);
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
 		try {
-			powerHandler.setEnergy(tagCompound.getInteger("EnergyLevel"));
+			maxInput = tagCompound.getInteger("MaxInput");
 		} catch (Throwable ex2) {
 			//fail quietly
 		}
 		try {
-			maxInput = tagCompound.getDouble("MaxInput");
+			maxOutput = tagCompound.getInteger("MaxOutput");
 		} catch (Throwable ex2) {
 			//fail quietly
 		}
 		try {
-			maxOutput = tagCompound.getDouble("MaxOutput");
+			maxEnergy = tagCompound.getInteger("MaxEnergy");
 		} catch (Throwable ex2) {
 			//fail quietly
 		}
-		try {
-			maxEnergy = tagCompound.getDouble("MaxEnergy");
-		} catch (Throwable ex2) {
-			//fail quietly
-		}
+		//configure powerhandler before setting energy level
 		powerHandler.configure(10, maxInput, 25, maxEnergy);
+		try {
+			energyLevel = tagCompound.getInteger("EnergyLevel");
+			powerHandler.setEnergy(energyLevel);
+		} catch (Throwable ex2) {
+			//fail quietly
+		}
 	}
 
 	@Override

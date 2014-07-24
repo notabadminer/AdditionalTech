@@ -48,7 +48,7 @@ public class GuiSolarInverter extends GuiContainer {
 		fontRendererObj.drawString("Solar Inverter", 6, 5, 4210752);
 		fontRendererObj.drawString("Panels Connected: " + tileEntity.panelCount, 18, 26, 4210752);
 		fontRendererObj.drawString("Max Panels:  " + tileEntity.panelMax, 18, 39, 4210752);
-		fontRendererObj.drawString("Generated: " + tileEntity.energyGenerated + " MJ", 18, 52, 4210752);
+		fontRendererObj.drawString("Generating: " + tileEntity.energyGenerated + " MJ", 18, 52, 4210752);
 		fontRendererObj.drawString("Stored: " + Math.round(tileEntity.energy) + " MJ", 18, 65, 4210752);
 		// draws "Inventory" or your regional equivalent
 		fontRendererObj.drawString(
@@ -70,9 +70,9 @@ public class GuiSolarInverter extends GuiContainer {
 	}
 	
 	protected void actionPerformed(GuiButton par1GuiButton) {
-		if (par1GuiButton.id == idResetButton) {
+		/*if (par1GuiButton.id == idResetButton) {
 			tileEntity.onResetButtonPressed();
-		}
+		}*/
 		tileEntity.sendPacket(par1GuiButton.id);
 	}
 }

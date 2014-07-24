@@ -17,7 +17,6 @@ public class ContainerGrinder extends Container {
 		private int lastCookTime;
 		private int lastEnergyLevel;
 		private int lastBatteryLevel;
-		private int lastBatteryMax;
 		
 		public ContainerGrinder(InventoryPlayer inventoryPlayer, TileGrinder tEntity) {
 			tileEntity = tEntity;
@@ -64,7 +63,7 @@ public class ContainerGrinder extends Container {
 				stack = stackInSlot.copy();
 				
 				// merges the item into player inventory since its in the tileEntity
-				if (slot <= 7) {
+				if (slot < 7) {
 					if (!this.mergeItemStack(stackInSlot, 7, 43, true)) {
 						return null;
 					}
@@ -73,7 +72,7 @@ public class ContainerGrinder extends Container {
 				// inventory
 				else {
 					boolean foundSlot = false;
-					for (int i = 0; i <= 7; i++){
+					for (int i = 0; i < 7; i++){
 						if (((Slot)inventorySlots.get(i)).isItemValid(stackInSlot) && this.mergeItemStack(stackInSlot, i, i + 1, false)) {
 							foundSlot = true;
 							break;
@@ -203,18 +202,13 @@ public class ContainerGrinder extends Container {
 	            }
 	            if (this.lastBatteryLevel != this.tileEntity.batteryLevel)
 	            {
-	                icrafting.sendProgressBarUpdate(this, 3, this.tileEntity.batteryLevel);
-	            }
-	            if (this.lastBatteryMax != this.tileEntity.batteryMax)
-	            {
-	                icrafting.sendProgressBarUpdate(this, 4, (int) this.tileEntity.batteryMax);
+	            	tileEntity.updateTE();
 	            }
 	        }
 
 	        this.lastTimer = this.tileEntity.grindTimer;
 	        this.lastEnergyLevel = this.tileEntity.energyLevel;
 	        this.lastBatteryLevel = this.tileEntity.batteryLevel;
-	        this.lastBatteryMax = (int) this.tileEntity.batteryMax;
 	    }
 	    
 	    @SideOnly(Side.CLIENT)
@@ -231,14 +225,6 @@ public class ContainerGrinder extends Container {
 	        if (par1 == 2)
 	        {
 	            this.tileEntity.energyLevel = par2;
-	        }
-	        if (par1 == 3)
-	        {
-	            this.tileEntity.batteryLevel = par2;
-	        }
-	        if (par1 == 4)
-	        {
-	            this.tileEntity.batteryMax = par2;
 	        }
 	    }
 	}

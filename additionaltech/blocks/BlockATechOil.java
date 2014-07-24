@@ -13,11 +13,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.BlockFluidClassic;
 import net.minecraftforge.fluids.Fluid;
 
-public class BlockAlgaeSlurry extends BlockFluidClassic {
+public class BlockATechOil extends BlockFluidClassic {
 	
 	private final Fluid fluid;
 
-	public BlockAlgaeSlurry(Fluid fluid, Material material) {
+	public BlockATechOil(Fluid fluid, Material material) {
 		super(fluid, material);
 		this.fluid = fluid;
 		setCreativeTab(AdditionalTech.tabAdditionalTech);
@@ -35,10 +35,8 @@ public class BlockAlgaeSlurry extends BlockFluidClassic {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(IIconRegister register) {
-		stillIcon = register.registerIcon("additionaltech:algae_slurry");
-		flowingIcon = register.registerIcon("additionaltech:algae_slurry_flowing");
-		this.fluid.setStillIcon(this.stillIcon);
-		this.fluid.setFlowingIcon(this.flowingIcon);
+		stillIcon = register.registerIcon("additionaltech:oil");
+		flowingIcon = register.registerIcon("additionaltech:oil_flowing");
 	}
     
     @Override
@@ -56,6 +54,8 @@ public class BlockAlgaeSlurry extends BlockFluidClassic {
 	@Override
 	public int colorMultiplier(IBlockAccess iblockaccess, int x, int y, int z)
 	{
-	return 0xE9DC4A; // HEX color code as indicated by the 0x in front. This is a greenish color.
+	return 0x000000; // HEX color code.
 	}
+
+
 }

@@ -1,7 +1,7 @@
 package additionaltech.inventory;
 
-import additionaltech.tile.TileESM;
-import cpw.mods.fml.common.FMLLog;
+import additionaltech.tile.TileGrinder;
+import additionaltech.tile.TileHTL;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,18 +11,25 @@ import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-public class ContainerESM extends Container {
+public class ContainerHTL extends Container {
 	
-		private TileESM tileEntity;
-		private int lastEnergyLevel, lastMaxEnergy, lastMaxInput, lastMaxOutput;
+		private TileHTL tileEntity;
+		private int lastSlurryLevel;
+		private int lastOilLevel;
+		private int lastEnergyLevel;
+		private int lastBatteryLevel;
+		private int lastBatteryMax;
+		private int lastTemp;
+		private int lastPressure;
 		
-		
-		public ContainerESM(InventoryPlayer inventoryPlayer, TileESM tEntity) {
+		public ContainerHTL(InventoryPlayer inventoryPlayer, TileHTL tEntity) {
 			tileEntity = tEntity;
 			// the Slot constructor takes the IInventory and the slot number in that
 			// it binds to
 			// and the x-y coordinates it resides on-screen
-			//addSlotToContainer(new Slot(tileEntity, TileEFurnace.slotInput, 50, 58));
+			addSlotToContainer(new Slot(tileEntity, TileHTL.slotInput, 149, 25));
+			addSlotToContainer(new SlotOutput(tileEntity, TileHTL.slotOutput, 149, 79));
+			addSlotToContainer(new SlotBattery(tileEntity, TileHTL.slotBattery, 30, 83));
 					
 			// commonly used vanilla code that adds the player's inventory
 			bindPlayerInventory(inventoryPlayer);
@@ -56,8 +63,8 @@ public class ContainerESM extends Container {
 				stack = stackInSlot.copy();
 				
 				// merges the item into player inventory since its in the tileEntity
-				if (slot < 1) {
-					if (!this.mergeItemStack(stackInSlot, 1, 36, true)) {
+				if (slot < 3) {
+					if (!this.mergeItemStack(stackInSlot, 3, 39, true)) {
 						return null;
 					}
 				}
@@ -65,7 +72,7 @@ public class ContainerESM extends Container {
 				// inventory
 				else {
 					boolean foundSlot = false;
-					for (int i = 0; i < 1; i++){
+					for (int i = 0; i <= 3; i++){
 						if (((Slot)inventorySlots.get(i)).isItemValid(stackInSlot) && this.mergeItemStack(stackInSlot, i, i + 1, false)) {
 							foundSlot = true;
 							break;
@@ -120,12 +127,10 @@ public class ContainerESM extends Container {
 						if (l <= stack.getMaxStackSize() && l <= slot.getSlotStackLimit()) {
 							stack.stackSize = 0;
 							itemstack1.stackSize = l;
-							tileEntity.markDirty();
 							flag1 = true;
 						} else if (itemstack1.stackSize < stack.getMaxStackSize() && l < slot.getSlotStackLimit()) {
 							stack.stackSize -= stack.getMaxStackSize() - itemstack1.stackSize;
 							itemstack1.stackSize = stack.getMaxStackSize();
-							tileEntity.markDirty();
 							flag1 = true;
 						}
 					}
@@ -152,13 +157,11 @@ public class ContainerESM extends Container {
 						if (l <= slot.getSlotStackLimit()) {
 							slot.putStack(stack.copy());
 							stack.stackSize = 0;
-							tileEntity.markDirty();
 							flag1 = true;
 							break;
 						} else {
 							putStackInSlot(k, new ItemStack(stack.getItem(), slot.getSlotStackLimit(), stack.getItemDamage()));
 							stack.stackSize -= slot.getSlotStackLimit();
-							tileEntity.markDirty();
 							flag1 = true;
 						}
 					}
@@ -170,46 +173,86 @@ public class ContainerESM extends Container {
 			return flag1;
 		}
 		
-	/**
-     * Looks for changes made in the container, sends them to every listener.
-     */
-	public void detectAndSendChanges() {
-		super.detectAndSendChanges();
-		
-		for (int i = 0; i < this.crafters.size(); ++i)
-        {
-            ICrafting icrafting = (ICrafting)this.crafters.get(i);
+		/**
+	     * Looks for changes made in the container, sends them to every listener.
+	     */
+	    public void detectAndSendChanges()
+	    {
+	        super.detectAndSendChanges();
 
-            if (this.lastMaxInput != this.tileEntity.maxInput)
-            {
-                icrafting.sendProgressBarUpdate(this, 0, this.tileEntity.maxInput);
-            }
-            if (this.lastMaxOutput != this.tileEntity.maxOutput)
-            {
-                icrafting.sendProgressBarUpdate(this, 1, this.tileEntity.maxOutput);
-            }
-            if (this.lastMaxEnergy != this.tileEntity.maxEnergy
-            		|| this.lastEnergyLevel != this.tileEntity.energyLevel) {
-            	tileEntity.updateTE();
-            }
+	        for (int i = 0; i < this.crafters.size(); ++i)
+	        {
+	            ICrafting icrafting = (ICrafting)this.crafters.get(i);
 
-		this.lastMaxInput = this.tileEntity.maxInput;
-		this.lastMaxOutput = this.tileEntity.maxOutput;
-		this.lastMaxEnergy = this.tileEntity.maxEnergy;
-		this.lastEnergyLevel = this.tileEntity.energyLevel;
-        }
-	}
-	
-	 @SideOnly(Side.CLIENT)
+	            if (this.lastSlurryLevel != this.tileEntity.slurryLevel)
+	            {
+	                icrafting.sendProgressBarUpdate(this, 0, this.tileEntity.slurryLevel);
+	            }
+	            if (this.lastOilLevel != this.tileEntity.oilLevel)
+	            {
+	                icrafting.sendProgressBarUpdate(this, 1, this.tileEntity.oilLevel);
+	            }
+	            if (this.lastEnergyLevel != this.tileEntity.energyLevel)
+	            {
+	                icrafting.sendProgressBarUpdate(this, 2, this.tileEntity.energyLevel);
+	            }
+	            if (this.lastBatteryLevel != this.tileEntity.batteryLevel)
+	            {
+	                icrafting.sendProgressBarUpdate(this, 3, this.tileEntity.batteryLevel);
+	            }
+	            if (this.lastBatteryMax != this.tileEntity.batteryMax)
+	            {
+	                icrafting.sendProgressBarUpdate(this, 4, (int) this.tileEntity.batteryMax);
+	            }
+	            if (this.lastTemp != this.tileEntity.temp)
+	            {
+	                icrafting.sendProgressBarUpdate(this, 5, this.tileEntity.temp);
+	            }
+	            if (this.lastPressure != this.tileEntity.pressure)
+	            {
+	                icrafting.sendProgressBarUpdate(this, 6, this.tileEntity.pressure);
+	            }
+	        }
+
+	        this.lastSlurryLevel = this.tileEntity.slurryLevel;
+	        this.lastOilLevel = this.tileEntity.oilLevel;
+	        this.lastEnergyLevel = this.tileEntity.energyLevel;
+	        this.lastBatteryLevel = this.tileEntity.batteryLevel;
+	        this.lastBatteryMax = (int) this.tileEntity.batteryMax;
+	        this.lastTemp = this.tileEntity.temp;
+	        this.lastPressure = this.tileEntity.pressure;
+	    }
+	    
+	    @SideOnly(Side.CLIENT)
 	    public void updateProgressBar(int par1, int par2)
 	    {
 	        if (par1 == 0)
 	        {
-	            this.tileEntity.maxInput = par2;
+	            this.tileEntity.slurryLevel = par2;
 	        }
 	        if (par1 == 1)
 	        {
-	            this.tileEntity.maxOutput = par2;
+	            this.tileEntity.oilLevel = par2;
+	        }
+	        if (par1 == 2)
+	        {
+	            this.tileEntity.energyLevel = par2;
+	        }
+	        if (par1 == 3)
+	        {
+	            this.tileEntity.batteryLevel = par2;
+	        }
+	        if (par1 == 4)
+	        {
+	            this.tileEntity.batteryMax = par2;
+	        }
+	        if (par1 == 5)
+	        {
+	            this.tileEntity.temp = par2;
+	        }
+	        if (par1 == 6)
+	        {
+	            this.tileEntity.pressure = par2;
 	        }
 	    }
-}
+	}

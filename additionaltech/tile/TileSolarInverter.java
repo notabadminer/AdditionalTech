@@ -19,7 +19,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 import additionaltech.AdditionalTech;
 import additionaltech.RegistryHandler;
 import additionaltech.blocks.BlockSolarPanel;
-import additionaltech.net.PacketSolarInverter;
+import additionaltech.net.ESMButtonMessage;
+import additionaltech.net.InverterButtonMessage;
 import buildcraft.api.power.IPowerEmitter;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerHandler.PowerReceiver;
@@ -290,9 +291,8 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter, IPip
 	}
 	
 	public void sendPacket(int button) {
-		PacketSolarInverter packet = new PacketSolarInverter(xCoord, yCoord,
-				zCoord, button);
-		AdditionalTech.packetPipeline.sendToServer(packet);
+		AdditionalTech.snw.sendToServer(new InverterButtonMessage(xCoord, yCoord,
+				zCoord, button));
 	}
 	
 	@Override

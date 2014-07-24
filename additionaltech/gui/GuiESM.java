@@ -13,6 +13,7 @@ import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.GL11;
 
+import cpw.mods.fml.common.FMLLog;
 import additionaltech.inventory.ContainerESM;
 import additionaltech.tile.TileESM;
 
@@ -78,6 +79,7 @@ public class GuiESM extends GuiContainer {
 				//do something!!!!
 				List list = new ArrayList();
 				list.add(tileEntity.energyLevel + " MJ");
+				//list.add(tileEntity.maxEnergy + " MJ");
 				this.drawHoveringText(list, (int) mouseX - k, (int) mouseY - l, fontRendererObj);
 			}
 			super.drawGuiContainerForegroundLayer(mouseX, mouseY);
@@ -94,12 +96,11 @@ public class GuiESM extends GuiContainer {
 		int guiHeight = (height - ySize) / 2;
 		this.drawTexturedModalRect(guiWidth, guiHeight, 0, 0, xSize, ySize);
         
-		int energyLevel = this.tileEntity.getEnergyLevelScaled(70);
+		int energyLevel = (int) this.tileEntity.getEnergyLevelScaled(70);
         this.drawTexturedModalRect(guiWidth + 19, guiHeight + 94 - energyLevel, 176, 0, 15, energyLevel);
     }
     
     protected void actionPerformed(GuiButton par1GuiButton) {
-		tileEntity.configurePowerHandler(par1GuiButton.id);
 		tileEntity.sendPacket(par1GuiButton.id);
 	}
 }

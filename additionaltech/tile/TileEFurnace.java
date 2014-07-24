@@ -2,7 +2,10 @@ package additionaltech.tile;
 
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.relauncher.Side;
+import additionaltech.AdditionalTech;
 import additionaltech.RegistryHandler;
+import additionaltech.net.EFurnaceTEMessage;
+import additionaltech.net.ESMButtonMessage;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerHandler;
 import buildcraft.api.power.PowerHandler.PowerReceiver;
@@ -20,6 +23,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
@@ -37,6 +43,7 @@ public class TileEFurnace extends TileEntity implements IPipeConnection, IPowerR
     public int energyLevel;
     public int maxEnergy = 2000;
     public int batteryLevel;
+    private int lastBatteryLevel;
     public double batteryMax;
     public boolean currentState = false;
     public static final int slotInput = 0;
@@ -301,6 +308,15 @@ public class TileEFurnace extends TileEntity implements IPipeConnection, IPowerR
 	}
 	
 	@Override
+    public Packet getDescriptionPacket() {
+        return AdditionalTech.snw.getPacketFrom(new EFurnaceTEMessage(this));
+    }
+	
+	 public void updateTE() {
+		 	worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+	    }
+	
+	@Override
 	public void writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		NBTTagList itemList = new NBTTagList();
@@ -332,7 +348,7 @@ public class TileEFurnace extends TileEntity implements IPipeConnection, IPowerR
 			}
 		}
 		try {
-			powerHandler.addEnergy(tagCompound.getInteger("EnergyLevel"));
+			powerHandler.setEnergy(tagCompound.getInteger("EnergyLevel"));
 		} catch (Throwable ex2) {
 			energyLevel = 0;
 		}

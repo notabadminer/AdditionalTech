@@ -2,8 +2,11 @@ package additionaltech.tile;
 
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.relauncher.Side;
+import additionaltech.AdditionalTech;
 import additionaltech.GrinderRecipes;
 import additionaltech.RegistryHandler;
+import additionaltech.net.EFurnaceTEMessage;
+import additionaltech.net.GrinderTEMessage;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerHandler;
 import buildcraft.api.power.PowerHandler.PowerReceiver;
@@ -19,6 +22,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
@@ -143,9 +149,7 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
         }
         else
         {
-        	ItemStack itemInStack = this.inventory[slotInput];
-        	Item itemForStack = itemInStack.getItem();
-        	ItemStack itemstack = GrinderRecipes.getGrindingResult(itemForStack);
+        	ItemStack itemstack = GrinderRecipes.getGrindingResult(this.inventory[slotInput].getItem());
             if (itemstack == null) return false;
             if (this.inventory[slot] == null) return true;
             if (!this.inventory[slot].isItemEqual(itemstack)) return false;
@@ -158,10 +162,8 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
      * Turn one item from the grinder source stack into the appropriate itemstack from grinder recipes
      */
 	public void grindItem() {
-		ItemStack itemInStack = this.inventory[slotInput];
-		Item itemForStack = itemInStack.getItem();
-		ItemStack itemstack = GrinderRecipes.getGrindingResult(itemForStack);
-		playerXP += GrinderRecipes.getExperience(itemForStack);
+		ItemStack itemstack = GrinderRecipes.getGrindingResult(this.inventory[slotInput].getItem());
+		playerXP += GrinderRecipes.getExperience(this.inventory[slotInput].getItem());
 		//FMLLog.info("Player XP: " + playerXP);
 
 		// find the free slot. if this fails, get out of here.
@@ -326,6 +328,15 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
 	}
 	
 	@Override
+    public Packet getDescriptionPacket() {
+        return AdditionalTech.snw.getPacketFrom(new GrinderTEMessage(this));
+    }
+	
+	 public void updateTE() {
+		 worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+	}
+	
+	@Override
 	public void writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		NBTTagList itemList = new NBTTagList();
@@ -343,6 +354,7 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
 		tagCompound.setBoolean("LastActive", lastActive);
 		tagCompound.setInteger("EnergyCost", energyCost);
 		tagCompound.setInteger("GrindTime", grindTime);
+		tagCompound.setInteger("BatteryLevel", batteryLevel);
 	}
 
 	@Override
@@ -358,7 +370,7 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
 			}
 		}
 		try {
-			powerHandler.addEnergy(tagCompound.getInteger("EnergyLevel"));
+			powerHandler.setEnergy(tagCompound.getInteger("EnergyLevel"));
 		} catch (Throwable ex2) {
 			energyLevel = 0;
 		}
@@ -376,6 +388,11 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
 			grindTime = tagCompound.getInteger("GrindTime");
 		} catch (Throwable ex2) {
 			grindTime = 200;
+		}
+		try {
+			batteryLevel = tagCompound.getInteger("BatteryLevel");
+		} catch (Throwable ex2) {
+			batteryLevel = 0;
 		}
 	}
 	
@@ -453,4 +470,10 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
 	public int[] getAccessibleSlotsFromSide(int side) {
 		return side == 0 ? slots_bottom : (side == 1 ? slots_top : slots_sides);
 	}
+	
+	/*@Override
+    public Packet getDescriptionPacket()
+    {
+        return PacketHandler.INSTANCE.getPacketFrom(new MessageTileEntityGrinder(this));
+    }*/
 }

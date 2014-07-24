@@ -3,11 +3,13 @@ package additionaltech.gui;
 import additionaltech.inventory.ContainerEFurnace;
 import additionaltech.inventory.ContainerESM;
 import additionaltech.inventory.ContainerGrinder;
+import additionaltech.inventory.ContainerHTL;
 import additionaltech.inventory.ContainerPhotobioreactor;
 import additionaltech.inventory.ContainerSolarInverter;
 import additionaltech.tile.TileEFurnace;
 import additionaltech.tile.TileESM;
 import additionaltech.tile.TileGrinder;
+import additionaltech.tile.TileHTL;
 import additionaltech.tile.TilePhotobioreactor;
 import additionaltech.tile.TileSolarInverter;
 import net.minecraft.entity.player.EntityPlayer;
@@ -37,6 +39,9 @@ public class GuiHandler implements IGuiHandler {
         if(tileEntity instanceof TilePhotobioreactor){
             return new ContainerPhotobioreactor(player.inventory, (TilePhotobioreactor) tileEntity);
         }
+        if(tileEntity instanceof TileHTL){
+            return new ContainerHTL(player.inventory, (TileHTL) tileEntity);
+        }
         return null;
 		}
 
@@ -58,6 +63,9 @@ public class GuiHandler implements IGuiHandler {
         }
         if(tileEntity instanceof TilePhotobioreactor){
             return new GuiPhotobioreactor(player.inventory, (TilePhotobioreactor) tileEntity);
+        }
+        if(tileEntity instanceof TileHTL){
+            return new GuiHTL(player.inventory, (TileHTL) tileEntity);
         }
         return null;
 		}

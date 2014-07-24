@@ -215,22 +215,18 @@ public class ContainerSolarInverter extends Container {
         if (par1 == 0)
         {
             this.tileEntity.panelCount = par2;
-            FMLLog.info("Setting panel count: " + par2);
         }
         if (par1 == 1)
         {
             this.tileEntity.panelMax = par2;
-            FMLLog.info("Setting max panels: " + par2);
         }
         if (par1 == 2)
         {
             this.tileEntity.energy = par2;
-            FMLLog.info("Setting energy: " + par2);
         }
         if (par1 == 3)
         {
             this.tileEntity.energyGenerated = par2;
-            FMLLog.info("Setting energy generated: " + par2);
         }
     }
 
