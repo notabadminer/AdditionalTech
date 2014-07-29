@@ -1,7 +1,7 @@
 package additionaltech.tile;
 
 import cpw.mods.fml.common.FMLLog;
-import additionaltech.RegistryHandler;
+import additionaltech.AdditionalTech;
 import buildcraft.api.transport.IPipeConnection;
 import buildcraft.api.transport.IPipeConnection.ConnectOverride;
 import buildcraft.api.transport.IPipeTile.PipeType;
@@ -83,7 +83,7 @@ public class TilePhotobioreactor extends TileEntity implements IPipeConnection,
 					new FluidStack(FluidRegistry.WATER, 1000), true);
 			inventory[slotOutput] = new ItemStack(Items.bucket);
 		}
-		if (inventory[slot].getItem() == RegistryHandler.itemBucketSlurry) {
+		if (inventory[slot].getItem() == AdditionalTech.proxy.itemBucketSlurry) {
 			inventory[slotInput] = null;
 			int used = slurrytank
 					.fill(new FluidStack(FluidRegistry.getFluid("algaeslurry"),
@@ -241,7 +241,7 @@ public class TilePhotobioreactor extends TileEntity implements IPipeConnection,
 	public boolean isItemValidForSlot(int slot, ItemStack stack) {
 		if (slot == 0
 				&& (stack.getItem() == Items.water_bucket
-						|| stack.getItem() == RegistryHandler.itemBucketSlurry || stack
+						|| stack.getItem() == AdditionalTech.proxy.itemBucketSlurry || stack
 						.getItem() == Items.sugar)) {
 			return true;
 		}

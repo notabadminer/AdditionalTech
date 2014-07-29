@@ -2,7 +2,6 @@ package additionaltech.tile;
 
 import cpw.mods.fml.common.FMLLog;
 import additionaltech.AdditionalTech;
-import additionaltech.RegistryHandler;
 import additionaltech.net.HTLButtonMessage;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerHandler;
@@ -117,9 +116,9 @@ public class TileHTL extends TileEntity implements IPipeConnection, IInventory, 
 		// disable button
 		if (cooldown) {
 			// cool down and depressurize
-			if (pressure > 0)
+			if (pressure > 2) {
 				//TODO play depressurize sound
-				pressure-=2;
+				pressure-=2; } else pressure = 0;
 			if (temp > 70)
 				temp--;
 			// set active false
@@ -158,7 +157,7 @@ public class TileHTL extends TileEntity implements IPipeConnection, IInventory, 
 		if (worldObj.isRemote) {
 			return;
 		}
-		if (inventory[slot].getItem() == RegistryHandler.itemBucketSlurry && inventory[slotOutput] == null) {
+		if (inventory[slot].getItem() == AdditionalTech.proxy.itemBucketSlurry && inventory[slotOutput] == null) {
 			inventory[slotInput] = null;
 			int used = slurrytank
 					.fill(new FluidStack(FluidRegistry.getFluid("algaeslurry"),
@@ -173,7 +172,7 @@ public class TileHTL extends TileEntity implements IPipeConnection, IInventory, 
 				inventory[slotInput] = null;
 			}
 			oiltank.drain(1000, true);
-			inventory[slotOutput] = new ItemStack(RegistryHandler.itemBucketOil);
+			inventory[slotOutput] = new ItemStack(AdditionalTech.proxy.itemBucketOil);
 			markDirty();
 		}
 	}
@@ -330,7 +329,7 @@ public class TileHTL extends TileEntity implements IPipeConnection, IInventory, 
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack stack) {
 		if (slot == 0
-				&& (stack.getItem() == RegistryHandler.itemBucketSlurry || stack
+				&& (stack.getItem() == AdditionalTech.proxy.itemBucketSlurry || stack
 						.getItem() == Items.bucket)) {
 			return true;
 		}

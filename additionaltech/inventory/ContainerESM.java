@@ -14,7 +14,10 @@ import net.minecraft.item.ItemStack;
 public class ContainerESM extends Container {
 	
 		private TileESM tileEntity;
-		private int lastEnergyLevel, lastMaxEnergy, lastMaxInput, lastMaxOutput;
+		private int lastEnergyLevel;
+		private int lastMaxEnergy;
+		private int lastMaxInput;
+		private int lastMaxOutput;
 		
 		
 		public ContainerESM(InventoryPlayer inventoryPlayer, TileESM tEntity) {
@@ -170,45 +173,51 @@ public class ContainerESM extends Container {
 			return flag1;
 		}
 		
-	/**
-     * Looks for changes made in the container, sends them to every listener.
-     */
-	public void detectAndSendChanges() {
-		super.detectAndSendChanges();
-		
-		for (int i = 0; i < this.crafters.size(); ++i)
-        {
-            ICrafting icrafting = (ICrafting)this.crafters.get(i);
+		/**
+	     * Looks for changes made in the container, sends them to every listener.
+	     */
+	    public void detectAndSendChanges()
+	    {
+	        super.detectAndSendChanges();
 
-            if (this.lastMaxInput != this.tileEntity.maxInput)
-            {
-                icrafting.sendProgressBarUpdate(this, 0, this.tileEntity.maxInput);
-            }
-            if (this.lastMaxOutput != this.tileEntity.maxOutput)
-            {
-                icrafting.sendProgressBarUpdate(this, 1, this.tileEntity.maxOutput);
-            }
-            if (this.lastMaxEnergy != this.tileEntity.maxEnergy
-            		|| this.lastEnergyLevel != this.tileEntity.energyLevel) {
-            	tileEntity.updateTE();
-            }
+	        for (int i = 0; i < this.crafters.size(); ++i)
+	        {
+	            ICrafting icrafting = (ICrafting)this.crafters.get(i);
 
-		this.lastMaxInput = this.tileEntity.maxInput;
-		this.lastMaxOutput = this.tileEntity.maxOutput;
-		this.lastMaxEnergy = this.tileEntity.maxEnergy;
-		this.lastEnergyLevel = this.tileEntity.energyLevel;
-        }
-	}
-	
-	 @SideOnly(Side.CLIENT)
+	            if (this.lastEnergyLevel != this.tileEntity.energyLevel)
+	            {
+	                icrafting.sendProgressBarUpdate(this, 0, this.tileEntity.energyLevel);
+	            }
+	            if (this.lastMaxEnergy != this.tileEntity.maxEnergy)
+	            {
+	                icrafting.sendProgressBarUpdate(this, 1, (int) this.tileEntity.maxEnergy);
+	            }
+	            if (this.lastMaxInput != this.tileEntity.maxInput)
+	            {
+	                icrafting.sendProgressBarUpdate(this, 2, (int) this.tileEntity.maxInput);
+	            }
+	            if (this.lastMaxOutput != this.tileEntity.maxOutput)
+	            {
+	                icrafting.sendProgressBarUpdate(this, 3, (int) this.tileEntity.maxOutput);
+	            }
+	        }
+
+	        this.lastEnergyLevel = this.tileEntity.energyLevel;
+	    }
+	    
+	    @SideOnly(Side.CLIENT)
 	    public void updateProgressBar(int par1, int par2)
 	    {
-	        if (par1 == 0)
-	        {
+	        if (par1 == 0) {
+	            this.tileEntity.energyLevel = par2;
+	        }
+	        if (par1 == 1) {
+	            this.tileEntity.maxEnergy = par2;
+	        }
+	        if (par1 == 2) {
 	            this.tileEntity.maxInput = par2;
 	        }
-	        if (par1 == 1)
-	        {
+	        if (par1 == 3) {
 	            this.tileEntity.maxOutput = par2;
 	        }
 	    }

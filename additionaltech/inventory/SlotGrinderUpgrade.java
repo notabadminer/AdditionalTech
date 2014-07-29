@@ -1,6 +1,6 @@
 package additionaltech.inventory;
 
-import additionaltech.RegistryHandler;
+import additionaltech.AdditionalTech;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
@@ -16,9 +16,9 @@ public class SlotGrinderUpgrade extends Slot {
 	@Override
 	   public boolean isItemValid(ItemStack itemstack) {
 		Item stackItem = itemstack.getItem();
-	    	if (stackItem == RegistryHandler.itemGrindstone 
-	    			|| stackItem == RegistryHandler.itemIronGrindstone
-	    			|| stackItem == RegistryHandler.itemDiamondGrindstone) {
+	    	if (stackItem == AdditionalTech.proxy.itemGrindstone 
+	    			|| stackItem == AdditionalTech.proxy.itemIronGrindstone
+	    			|| stackItem == AdditionalTech.proxy.itemDiamondGrindstone) {
 	    		return true;
 	    	} else return false;
 	   }

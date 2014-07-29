@@ -3,7 +3,6 @@ package additionaltech.blocks;
 import java.util.Random;
 
 import additionaltech.AdditionalTech;
-import additionaltech.RegistryHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
@@ -67,7 +66,7 @@ public class BlockAlgae extends BlockBush {
 				if (world.getBlock(x + 1, y - 1, z) == Blocks.water
 						&& world.getBlock(x + 1, y, z) == Blocks.air 
 						&& world.getBlock(x + 1, y - 2, z) != Blocks.water) {
-					world.setBlock(x + 1, y, z, RegistryHandler.blockAlgae, 0, 3);
+					world.setBlock(x + 1, y, z, AdditionalTech.proxy.blockAlgae, 0, 3);
 					world.setBlockMetadataWithNotify(x, y, z, 0, 2);
 					return;
 				}
@@ -75,7 +74,7 @@ public class BlockAlgae extends BlockBush {
 				if (world.getBlock(x - 1, y - 1, z) == Blocks.water
 						&& world.getBlock(x - 1, y, z) == Blocks.air
 						&& world.getBlock(x - 1, y - 2, z) != Blocks.water) {
-					world.setBlock(x - 1, y, z, RegistryHandler.blockAlgae, 0, 3);
+					world.setBlock(x - 1, y, z, AdditionalTech.proxy.blockAlgae, 0, 3);
 					world.setBlockMetadataWithNotify(x, y, z, 0, 2);
 					return;
 				}
@@ -83,7 +82,7 @@ public class BlockAlgae extends BlockBush {
 				if (world.getBlock(x, y - 1, z + 1) == Blocks.water
 						&& world.getBlock(x, y, z + 1) == Blocks.air
 						&& world.getBlock(x, y - 2, z + 1) != Blocks.water) {
-					world.setBlock(x, y, z + 1, RegistryHandler.blockAlgae, 0, 3);
+					world.setBlock(x, y, z + 1, AdditionalTech.proxy.blockAlgae, 0, 3);
 					world.setBlockMetadataWithNotify(x, y, z, 0, 2);
 					return;
 				}
@@ -91,7 +90,7 @@ public class BlockAlgae extends BlockBush {
 				if (world.getBlock(x, y - 1, z - 1) == Blocks.water
 						&& world.getBlock(x, y, z - 1) == Blocks.air
 						&& world.getBlock(x + 1, y - 2, z - 1) != Blocks.water) {
-					world.setBlock(x, y, z - 1, RegistryHandler.blockAlgae, 0, 3);
+					world.setBlock(x, y, z - 1, AdditionalTech.proxy.blockAlgae, 0, 3);
 					world.setBlockMetadataWithNotify(x, y, z, 0, 2);
 					return;
 				}
@@ -130,7 +129,7 @@ public class BlockAlgae extends BlockBush {
 	@Override
 	 public Item getItemDropped(int p_149650_1_, Random p_149650_2_, int p_149650_3_)
 	    {
-	        return RegistryHandler.itemAlgae;
+	        return AdditionalTech.proxy.itemAlgae;
 	    }
 
 }

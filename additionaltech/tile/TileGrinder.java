@@ -4,7 +4,6 @@ import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.relauncher.Side;
 import additionaltech.AdditionalTech;
 import additionaltech.GrinderRecipes;
-import additionaltech.RegistryHandler;
 import additionaltech.net.EFurnaceTEMessage;
 import additionaltech.net.GrinderTEMessage;
 import buildcraft.api.power.IPowerReceptor;
@@ -434,9 +433,9 @@ public class TileGrinder extends TileEntity implements IPipeConnection, IPowerRe
 		if (!worldObj.isRemote) {
 			for (int i = 0; i < inventory.length; i++) {
 				ItemStack stack = inventory[i];
-				if (stack != null && (stack.getItem() == RegistryHandler.itemGrindstone 
-						|| stack.getItem() == RegistryHandler.itemIronGrindstone 
-						|| stack.getItem() == RegistryHandler.itemDiamondGrindstone)) {
+				if (stack != null && (stack.getItem() == AdditionalTech.proxy.itemGrindstone 
+						|| stack.getItem() == AdditionalTech.proxy.itemIronGrindstone 
+						|| stack.getItem() == AdditionalTech.proxy.itemDiamondGrindstone)) {
 					upgradeCount++;
 				}
 			}

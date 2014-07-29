@@ -1,6 +1,6 @@
 package additionaltech.inventory;
 
-import additionaltech.RegistryHandler;
+import additionaltech.AdditionalTech;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
@@ -17,7 +17,7 @@ public class SlotBattery extends Slot {
 	@Override
 	   public boolean isItemValid(ItemStack itemstack) {
 		Item stackItem = itemstack.getItem();
-		return stackItem == Item.getItemFromBlock(RegistryHandler.blockESM);
+		return stackItem == Item.getItemFromBlock(AdditionalTech.proxy.blockESM);
 	   }
 
 	   @Override

@@ -3,7 +3,6 @@ package additionaltech.items;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import additionaltech.AdditionalTech;
-import additionaltech.RegistryHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
@@ -55,7 +54,7 @@ public class ItemAlgae extends Item {
 
                 if (par2World.getBlock(i, j, k).getMaterial() == Material.water && par2World.getBlockMetadata(i, j, k) == 0 && par2World.isAirBlock(i, j + 1, k))
                 {
-                    par2World.setBlock(i, j + 1, k, RegistryHandler.blockAlgae);
+                    par2World.setBlock(i, j + 1, k, AdditionalTech.proxy.blockAlgae);
 
                     if (!par3EntityPlayer.capabilities.isCreativeMode)
                     {

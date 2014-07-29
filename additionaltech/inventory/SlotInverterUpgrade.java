@@ -1,6 +1,6 @@
 package additionaltech.inventory;
 
-import additionaltech.RegistryHandler;
+import additionaltech.AdditionalTech;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
@@ -17,9 +17,9 @@ public class SlotInverterUpgrade extends Slot {
 	@Override
 	   public boolean isItemValid(ItemStack itemstack) {
 		Item stackItem = itemstack.getItem();
-		return stackItem == RegistryHandler.itemInverterCore
-				|| stackItem == RegistryHandler.itemStageTwoCore
-				|| stackItem == RegistryHandler.itemStageThreeCore;
+		return stackItem == AdditionalTech.proxy.itemInverterCore
+				|| stackItem == AdditionalTech.proxy.itemStageTwoCore
+				|| stackItem == AdditionalTech.proxy.itemStageThreeCore;
 	   }
 
 	   @Override

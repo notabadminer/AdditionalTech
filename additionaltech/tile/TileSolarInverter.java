@@ -17,7 +17,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.ForgeDirection;
 import additionaltech.AdditionalTech;
-import additionaltech.RegistryHandler;
 import additionaltech.blocks.BlockSolarPanel;
 import additionaltech.net.ESMButtonMessage;
 import additionaltech.net.InverterButtonMessage;
@@ -44,8 +43,6 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter, IPip
 	public ForgeDirection powerReceiverDirection = null;
 	public int panelCount = 0;
 	public int panelMax = 9;
-	public boolean isActive;
-    public boolean lastActive;
 	
 	public TileSolarInverter() {
 		super();
@@ -56,23 +53,6 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter, IPip
 		super.updateEntity();
 		generatePower();
 		sendPower();
-		//if panel count is greater than zero, assume power is generated and hum
-		if (worldObj.isRemote && worldObj.getBlockMetadata(xCoord, yCoord, zCoord) > 6) {
-			worldObj.playSound(xCoord, yCoord, zCoord, "additionaltech:inverterHum", 0.6F, 1.0F, true);
-		}
-		if (isActive != lastActive) {
-			lastActive = isActive;
-			updateBlock();
-		}
-	}
-	
-	private void updateBlock() {
-		//we set block meta plus or minus to change status burning/idle
-		int meta = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
-		if (isActive) {
-			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, meta + 6, 2);
-		} else
-			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, meta - 6, 2);
 	}
 	
 	public void onResetButtonPressed() {
@@ -157,11 +137,11 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter, IPip
 			for (int i = 0; i < inventory.length; i++) {
 				ItemStack stack = inventory[i];
 				if (stack != null) {
-					if (stack.getItem() == RegistryHandler.itemInverterCore) {
+					if (stack.getItem() == AdditionalTech.proxy.itemInverterCore) {
 						panelMax += 9;
-					} else if (stack.getItem() == RegistryHandler.itemStageTwoCore) {
+					} else if (stack.getItem() == AdditionalTech.proxy.itemStageTwoCore) {
 						panelMax += 24;
-					} else if (stack.getItem() == RegistryHandler.itemStageThreeCore) {
+					} else if (stack.getItem() == AdditionalTech.proxy.itemStageThreeCore) {
 						panelMax += 50;
 					}
 				}
@@ -177,13 +157,16 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter, IPip
 	}
 
 	public void generatePower() {
-		if (!worldObj.isRemote && worldObj.isDaytime() && (!worldObj.isRaining() && !worldObj.isThundering())) {
+		if (!worldObj.isRemote && worldObj.isDaytime()
+				&& (!worldObj.isRaining() && !worldObj.isThundering())) {
 			energyGenerated = panelCount * 0.25;
-			if (energy + energyGenerated > maxEnergy) {
-				energyGenerated = maxEnergy - energy;
-				energy += energyGenerated;
+			if (energyGenerated > 0) {
+				if (energy + energyGenerated > maxEnergy) {
+					energyGenerated = maxEnergy - energy;
+					energy += energyGenerated;
+				} else
+					energy += energyGenerated;
 			}
-			else energy += energyGenerated;
 		}
 	}
 	
@@ -263,11 +246,6 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter, IPip
 		} catch (Throwable ex2) {
 			energy = 0;
 		}
-		try {
-			lastActive = tagCompound.getBoolean("LastActive");
-		} catch (Throwable ex2) {
-			lastActive = false;
-		}
 	}
 
 	@Override
@@ -287,7 +265,6 @@ public class TileSolarInverter extends TileEntity implements IPowerEmitter, IPip
 		tagCompound.setInteger("SolarPanels", panelCount);
 		tagCompound.setInteger("MaxSolarPanels", panelMax);
 		tagCompound.setDouble("EnergyLevel", energy);
-		tagCompound.setBoolean("LastActive", lastActive);
 	}
 	
 	public void sendPacket(int button) {

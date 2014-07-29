@@ -3,7 +3,6 @@ package additionaltech.tile;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.relauncher.Side;
 import additionaltech.AdditionalTech;
-import additionaltech.RegistryHandler;
 import additionaltech.net.EFurnaceTEMessage;
 import additionaltech.net.ESMButtonMessage;
 import buildcraft.api.power.IPowerReceptor;
@@ -293,9 +292,9 @@ public class TileEFurnace extends TileEntity implements IPipeConnection, IPowerR
 	public boolean isItemValidForSlot(int slot, ItemStack stack) {
 		Item stackItem = stack.getItem();
 		if (slot == slotUpgrade1 || slot == slotUpgrade2 || slot == slotUpgrade3) {
-			return stackItem == RegistryHandler.itemHeatingElement;
+			return stackItem == AdditionalTech.proxy.itemHeatingElement;
 		} else if (slot == slotBattery) {
-			return stackItem == Item.getItemFromBlock(RegistryHandler.blockESM);
+			return stackItem == Item.getItemFromBlock(AdditionalTech.proxy.blockESM);
 		} else if (slot == slotInput) {
 			return true;
 		} else return false;
@@ -402,7 +401,7 @@ public class TileEFurnace extends TileEntity implements IPipeConnection, IPowerR
 		if (!worldObj.isRemote) {
 			for (int i = 0; i < inventory.length; i++) {
 				ItemStack stack = inventory[i];
-				if (stack != null && stack.getItem() == RegistryHandler.itemHeatingElement) {
+				if (stack != null && stack.getItem() == AdditionalTech.proxy.itemHeatingElement) {
 					upgradeCount++;
 				}
 			}

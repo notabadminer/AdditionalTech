@@ -11,131 +11,131 @@ public class RecipeHandler {
 	public static void addRecipes(){
 		
 		//shaped recipes
-		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.blockSolarPanel), new Object[]{
+		GameRegistry.addShapedRecipe(new ItemStack(AdditionalTech.proxy.blockSolarPanel), new Object[]{
 				"GGG",
 				"QQQ",
 				"III",
 				'G', Blocks.glass, 'Q', Items.quartz, 'I', Items.iron_ingot
 			});
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(RegistryHandler.wireCopper, 6), new Object[]{
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(AdditionalTech.proxy.wireCopper, 6), new Object[]{
 				"CCC",
 				"XXX",
 				"XXX",
 				'C', "ingotCopper"
 			}));
-		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.itemInverterCore), new Object[]{
+		GameRegistry.addShapedRecipe(new ItemStack(AdditionalTech.proxy.itemInverterCore), new Object[]{
 				"WIW",
 				"WIW",
 				"WIW",
-				'W', RegistryHandler.wireCopper, 'I', Items.iron_ingot
+				'W', AdditionalTech.proxy.wireCopper, 'I', Items.iron_ingot
 			});
-		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.itemStageTwoCore), new Object[]{
+		GameRegistry.addShapedRecipe(new ItemStack(AdditionalTech.proxy.itemStageTwoCore), new Object[]{
 				"CCC",
 				"XXX",
 				"XXX",
-				'C', RegistryHandler.itemInverterCore
+				'C', AdditionalTech.proxy.itemInverterCore
 			});
-		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.itemStageThreeCore), new Object[]{
+		GameRegistry.addShapedRecipe(new ItemStack(AdditionalTech.proxy.itemStageThreeCore), new Object[]{
 				"CCC",
 				"XXX",
 				"XXX",
-				'C', RegistryHandler.itemStageTwoCore
+				'C', AdditionalTech.proxy.itemStageTwoCore
 			});
-		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.blockSolarInverter), new Object[]{
+		GameRegistry.addShapedRecipe(new ItemStack(AdditionalTech.proxy.blockSolarInverter), new Object[]{
 				"III",
 				"ICI",
 				"III",
-				'C', RegistryHandler.itemInverterCore, 'I', Items.iron_ingot
+				'C', AdditionalTech.proxy.itemInverterCore, 'I', Items.iron_ingot
 			});
-		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.blockESM), new Object[]{
+		GameRegistry.addShapedRecipe(new ItemStack(AdditionalTech.proxy.blockESM), new Object[]{
 				"IGI",
 				"GRG",
 				"IGI",
-				'G', Blocks.glass, 'I', RegistryHandler.ingotCopper, 'R', Blocks.redstone_block
+				'G', Blocks.glass, 'I', AdditionalTech.proxy.ingotCopper, 'R', Blocks.redstone_block
 			});
-		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.blockESM, 1, 1), new Object[]{
+		GameRegistry.addShapedRecipe(new ItemStack(AdditionalTech.proxy.blockESM, 1, 1), new Object[]{
 			"IGI",
 			"GCG",
 			"IGI",
-			'G', Blocks.glass, 'I', Items.iron_ingot, 'C', RegistryHandler.blockESMIICore
+			'G', Blocks.glass, 'I', Items.iron_ingot, 'C', AdditionalTech.proxy.blockESMIICore
 		});
-		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.blockESM, 1, 2), new Object[]{
+		GameRegistry.addShapedRecipe(new ItemStack(AdditionalTech.proxy.blockESM, 1, 2), new Object[]{
 			"IGI",
 			"GCG",
 			"IGI",
-			'G', Blocks.glass, 'I', Items.gold_ingot, 'C', RegistryHandler.blockESMIIICore
+			'G', Blocks.glass, 'I', Items.gold_ingot, 'C', AdditionalTech.proxy.blockESMIIICore
 		});
-		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.blockESMIICore), new Object[]{
+		GameRegistry.addShapedRecipe(new ItemStack(AdditionalTech.proxy.blockESMIICore), new Object[]{
 			"GRG",
 			"RGR",
 			"GRG",
-			'G', RegistryHandler.dustGold, 'R', Items.redstone
+			'G', AdditionalTech.proxy.dustGold, 'R', Items.redstone
 		});
-		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.blockESMIIICore), new Object[]{
+		GameRegistry.addShapedRecipe(new ItemStack(AdditionalTech.proxy.blockESMIIICore), new Object[]{
 			"DRD",
 			"RDR",
 			"DRD",
-			'D', RegistryHandler.dustDiamond, 'R', Items.redstone
+			'D', AdditionalTech.proxy.dustDiamond, 'R', Items.redstone
 		});
-		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.itemHeatingElement), new Object[]{
+		GameRegistry.addShapedRecipe(new ItemStack(AdditionalTech.proxy.itemHeatingElement), new Object[]{
 			"III",
 			"QQQ",
 			"III",
-			'I', RegistryHandler.ingotCopper, 'Q', Items.quartz
+			'I', AdditionalTech.proxy.ingotCopper, 'Q', Items.quartz
 		});
-		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.blockEFurnace), new Object[]{
+		GameRegistry.addShapedRecipe(new ItemStack(AdditionalTech.proxy.blockEFurnace), new Object[]{
 			"III",
 			"IXI",
 			"IHI",
-			'I', Items.iron_ingot, 'H', RegistryHandler.itemHeatingElement
+			'I', Items.iron_ingot, 'H', AdditionalTech.proxy.itemHeatingElement
 		});
-		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.itemGrindstone), new Object[]{
+		GameRegistry.addShapedRecipe(new ItemStack(AdditionalTech.proxy.itemGrindstone), new Object[]{
 			"XSX",
 			"SXS",
 			"XSX",
 			'S', Blocks.stone
 		});
-		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.itemIronGrindstone), new Object[]{
+		GameRegistry.addShapedRecipe(new ItemStack(AdditionalTech.proxy.itemIronGrindstone), new Object[]{
 			"XIX",
 			"IXI",
 			"XIX",
 			'I', Items.iron_ingot
 		});
-		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.itemDiamondGrindstone), new Object[]{
+		GameRegistry.addShapedRecipe(new ItemStack(AdditionalTech.proxy.itemDiamondGrindstone), new Object[]{
 			"DID",
 			"IXI",
 			"DID",
-			'I', Items.iron_ingot, 'D', RegistryHandler.dustDiamond
+			'I', Items.iron_ingot, 'D', AdditionalTech.proxy.dustDiamond
 		});
-		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.itemMotor), new Object[]{
+		GameRegistry.addShapedRecipe(new ItemStack(AdditionalTech.proxy.itemMotor), new Object[]{
 			"RWR",
 			"WIW",
 			"RWR",
-			'R', Items.redstone, 'W', RegistryHandler.wireCopper, 'I', Items.iron_ingot
+			'R', Items.redstone, 'W', AdditionalTech.proxy.wireCopper, 'I', Items.iron_ingot
 		});
-		GameRegistry.addShapedRecipe(new ItemStack(RegistryHandler.blockGrinder), new Object[]{
+		GameRegistry.addShapedRecipe(new ItemStack(AdditionalTech.proxy.blockGrinder), new Object[]{
 			"III",
 			"IXI",
 			"IMI",
-			'I', Items.iron_ingot, 'M', RegistryHandler.itemMotor
+			'I', Items.iron_ingot, 'M', AdditionalTech.proxy.itemMotor
 		});
 		
 		//shapeless recipes
 		GameRegistry.addShapelessRecipe(new ItemStack(
-				RegistryHandler.itemBucketSlurry), new ItemStack(
+				AdditionalTech.proxy.itemBucketSlurry), new ItemStack(
 				Items.wheat_seeds), new ItemStack(Items.sugar),
 				new ItemStack(Items.water_bucket)
 		);
 		
 		//smelting recipes
-		GameRegistry.addSmelting(new ItemStack(RegistryHandler.oreCopper), new ItemStack(RegistryHandler.ingotCopper), 0.0F);
-		GameRegistry.addSmelting(new ItemStack(RegistryHandler.dustCopper), new ItemStack(RegistryHandler.ingotCopper), 0.0F);
-		GameRegistry.addSmelting(new ItemStack(RegistryHandler.dustDiamond), new ItemStack(Items.diamond), 0.0F);
-		GameRegistry.addSmelting(new ItemStack(RegistryHandler.dustGold), new ItemStack(Items.gold_ingot), 0.0F);
-		GameRegistry.addSmelting(new ItemStack(RegistryHandler.dustIron), new ItemStack(Items.iron_ingot), 0.0F);
-		GameRegistry.addSmelting(new ItemStack(RegistryHandler.dustObsidian), new ItemStack(Blocks.obsidian), 0.0F);
-		//GameRegistry.addSmelting(new ItemStack(RegistryHandler.dustSteel), new ItemStack(RegistryHandler.ingotSteel), 0.0F);
-		//GameRegistry.addSmelting(new ItemStack(RegistryHandler.dustTin), new ItemStack(RegistryHandler.ingotTin), 0.0F);
+		GameRegistry.addSmelting(new ItemStack(AdditionalTech.proxy.oreCopper), new ItemStack(AdditionalTech.proxy.ingotCopper), 0.0F);
+		GameRegistry.addSmelting(new ItemStack(AdditionalTech.proxy.dustCopper), new ItemStack(AdditionalTech.proxy.ingotCopper), 0.0F);
+		GameRegistry.addSmelting(new ItemStack(AdditionalTech.proxy.dustDiamond), new ItemStack(Items.diamond), 0.0F);
+		GameRegistry.addSmelting(new ItemStack(AdditionalTech.proxy.dustGold), new ItemStack(Items.gold_ingot), 0.0F);
+		GameRegistry.addSmelting(new ItemStack(AdditionalTech.proxy.dustIron), new ItemStack(Items.iron_ingot), 0.0F);
+		GameRegistry.addSmelting(new ItemStack(AdditionalTech.proxy.dustObsidian), new ItemStack(Blocks.obsidian), 0.0F);
+		//GameRegistry.addSmelting(new ItemStack(AdditionalTech.proxy.dustSteel), new ItemStack(AdditionalTech.proxy.ingotSteel), 0.0F);
+		//GameRegistry.addSmelting(new ItemStack(AdditionalTech.proxy.dustTin), new ItemStack(AdditionalTech.proxy.ingotTin), 0.0F);
 
 	}
 }

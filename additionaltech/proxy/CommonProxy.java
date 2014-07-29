@@ -1,4 +1,4 @@
-package additionaltech;
+package additionaltech.proxy;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -9,10 +9,6 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.oredict.OreDictionary;
-import cpw.mods.fml.common.FMLLog;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import additionaltech.blocks.BlockATechOil;
 import additionaltech.blocks.BlockAlgae;
 import additionaltech.blocks.BlockAlgaeSlurry;
@@ -22,6 +18,7 @@ import additionaltech.blocks.BlockESMIICore;
 import additionaltech.blocks.BlockESMIIICore;
 import additionaltech.blocks.BlockGrinder;
 import additionaltech.blocks.BlockHTL;
+import additionaltech.blocks.BlockHeatsink;
 import additionaltech.blocks.BlockOreCopper;
 import additionaltech.blocks.BlockPhotobioreactor;
 import additionaltech.blocks.BlockSolarInverter;
@@ -53,10 +50,12 @@ import additionaltech.tile.TileEFurnace;
 import additionaltech.tile.TileESM;
 import additionaltech.tile.TileGrinder;
 import additionaltech.tile.TileHTL;
+import additionaltech.tile.TileHeatsink;
 import additionaltech.tile.TilePhotobioreactor;
 import additionaltech.tile.TileSolarInverter;
+import cpw.mods.fml.common.registry.GameRegistry;
 
-public class RegistryHandler {
+public class CommonProxy {
 	public static Block blockSolarPanel;
     public static Block blockSolarInverter;
     public static Block blockEFurnace;
@@ -70,6 +69,7 @@ public class RegistryHandler {
     public static Block blockAlgaeSlurry;
     public static Block blockAlgae;
     public static Block blockOil;
+    public static Block blockHeatsink;
 
     public static Item dustCopper;
     public static Item dustDiamond;
@@ -110,6 +110,7 @@ public class RegistryHandler {
     	blockPhotobioreactor = new BlockPhotobioreactor().setBlockName("blockPhotobioreactor");
     	blockHydrothermalliquifactor = new BlockHTL().setBlockName("blockHydrothermalliquifactor");
     	blockAlgae = new BlockAlgae().setBlockName("blockAlgae");
+    	blockHeatsink = new BlockHeatsink().setBlockName("blockHeatsink");
     	oreCopper = new BlockOreCopper().setBlockName("oreCopper");
     	
     	GameRegistry.registerBlock(blockSolarPanel, blockSolarPanel.getUnlocalizedName());
@@ -121,7 +122,8 @@ public class RegistryHandler {
     	GameRegistry.registerBlock(blockGrinder, blockGrinder.getUnlocalizedName());
     	GameRegistry.registerBlock(blockPhotobioreactor, blockPhotobioreactor.getUnlocalizedName());
     	GameRegistry.registerBlock(blockHydrothermalliquifactor, blockHydrothermalliquifactor.getUnlocalizedName());
-    	GameRegistry.registerBlock(blockAlgae, blockAlgae.getUnlocalizedName());    	
+    	GameRegistry.registerBlock(blockAlgae, blockAlgae.getUnlocalizedName());
+    	GameRegistry.registerBlock(blockHeatsink, blockHeatsink.getUnlocalizedName());
     	GameRegistry.registerBlock(oreCopper, oreCopper.getUnlocalizedName());
     	OreDictionary.registerOre("oreCopper", oreCopper);
 	}
@@ -180,7 +182,6 @@ public class RegistryHandler {
     	GameRegistry.registerItem(itemDiamondGrindstone, itemDiamondGrindstone.getUnlocalizedName());
     	GameRegistry.registerItem(itemMotor, itemMotor.getUnlocalizedName());
     	GameRegistry.registerItem(itemAlgae, itemAlgae.getUnlocalizedName());
-
 	}
 	
 	public static void registerFluids() {
@@ -214,5 +215,10 @@ public class RegistryHandler {
     	GameRegistry.registerTileEntity(TileESM.class, "TileESM");
     	GameRegistry.registerTileEntity(TilePhotobioreactor.class, "TilePhotobioreactor");
     	GameRegistry.registerTileEntity(TileHTL.class, "TileHTL");
+    	GameRegistry.registerTileEntity(TileHeatsink.class, "TileHeatsink");
 	}
+	
+	public void registerRenderers() {
+	}
+
 }

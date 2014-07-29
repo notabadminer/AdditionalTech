@@ -6,21 +6,31 @@ import additionaltech.net.ESMTEMessage;
 import additionaltech.net.GrinderTEMessage;
 import additionaltech.net.HTLButtonMessage;
 import additionaltech.net.InverterButtonMessage;
+import additionaltech.proxy.CommonProxy;
+import additionaltech.render.HeatsinkRenderer;
+import additionaltech.render.ItemHeatsinkRenderer;
+import additionaltech.render.ModelHeatsink;
 import additionaltech.tile.TileEFurnace;
 import additionaltech.tile.TileESM;
 import additionaltech.tile.TileGrinder;
 import additionaltech.tile.TileHTL;
+import additionaltech.tile.TileHeatsink;
 import additionaltech.tile.TilePhotobioreactor;
 import additionaltech.tile.TileSolarInverter;
 import additionaltech.world.OreGenerator;
 import additionaltech.world.AlgaeGenerator;
 import additionaltech.gui.GuiHandler;
+import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
+import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
+import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -43,6 +53,9 @@ public class AdditionalTech {
     
     public static CreativeTabs tabAdditionalTech = new AdditionalTechTab("tabAdditionalTech");
     
+    @SidedProxy(clientSide="additionaltech.proxy.ClientProxy", serverSide="additionaltech.proxy.CommonProxy")
+	public static CommonProxy proxy;
+    
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
     	Configuration config = new Configuration(event.getSuggestedConfigurationFile());
@@ -62,19 +75,19 @@ public class AdditionalTech {
 	    snw.registerMessage(GrinderTEMessage.class, GrinderTEMessage.class, 3, Side.CLIENT);
 	    snw.registerMessage(ESMTEMessage.class, ESMTEMessage.class, 4, Side.CLIENT);
 	    snw.registerMessage(HTLButtonMessage.class, HTLButtonMessage.class, 5, Side.SERVER);
-
     }
     
     @EventHandler
     public void load(FMLInitializationEvent event) {
     	
-    	RegistryHandler.registerFluids();
-    	RegistryHandler.registerBlocks();
-    	RegistryHandler.registerItems();
-    	RegistryHandler.registerTileEntitys();
+    	proxy.registerFluids();
+    	proxy.registerBlocks();
+    	proxy.registerItems();
+    	proxy.registerTileEntitys();
+    	proxy.registerRenderers();
     	
     	//register fluid and bucket combinations with the bucket handler
-    	BucketHandler.INSTANCE.buckets.put(RegistryHandler.blockAlgaeSlurry, RegistryHandler.itemBucketSlurry);
+    	BucketHandler.INSTANCE.buckets.put(proxy.blockAlgaeSlurry, proxy.itemBucketSlurry);
     	
     	NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
     	    	

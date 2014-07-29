@@ -29,15 +29,16 @@ public class BlockSolarPanel extends Block {
 		setHarvestLevel("pickaxe", 1);
 	}
 
-	@SideOnly(Side.CLIENT)
+	
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(IIconRegister par1IconRegister) {
 		blockIcon = par1IconRegister.registerIcon("additionaltech:Casing");
 		blockIconTop = par1IconRegister.registerIcon("additionaltech:SolarPanelTop");
 	}
 
-	@SideOnly(Side.CLIENT)
 	@Override
+	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(int side, int metadata) {
 		if (side == 1) {
 			return blockIconTop;
@@ -46,9 +47,15 @@ public class BlockSolarPanel extends Block {
 		}
 	}
 	
-	@SideOnly(Side.CLIENT)
 	@Override
+	@SideOnly(Side.CLIENT)
 	public boolean isOpaqueCube() {
+		return false;
+	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public boolean renderAsNormalBlock() {
 		return false;
 	}
 	
@@ -60,6 +67,4 @@ public class BlockSolarPanel extends Block {
     		world.setBlockMetadataWithNotify(x, y, z, 0, 3);
     	}
 	}
-
-
 }

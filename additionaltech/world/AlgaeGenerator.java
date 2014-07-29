@@ -2,7 +2,7 @@ package additionaltech.world;
 
 import java.util.Random;
 
-import additionaltech.RegistryHandler;
+import additionaltech.AdditionalTech;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -23,8 +23,8 @@ public class AlgaeGenerator implements IWorldGenerator {
 				int zGen = chunkZ + random.nextInt(16);
 				for (int yGen = 60; yGen < 66; ++yGen) {
 					if (world.getBlock(xGen, yGen, zGen) == Blocks.air
-						&& RegistryHandler.blockAlgae.canBlockStay(world, xGen, yGen, zGen)) {
-						world.setBlock(xGen, yGen, zGen, RegistryHandler.blockAlgae);
+						&& AdditionalTech.proxy.blockAlgae.canBlockStay(world, xGen, yGen, zGen)) {
+						world.setBlock(xGen, yGen, zGen, AdditionalTech.proxy.blockAlgae);
 					}
 				}
 			}
