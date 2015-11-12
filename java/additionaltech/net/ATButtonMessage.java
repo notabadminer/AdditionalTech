@@ -1,6 +1,8 @@
 package additionaltech.net;
 
 import additionaltech.tile.TileEFurnace;
+import additionaltech.tile.TileHTL;
+import additionaltech.tile.TileSolarInverter;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -46,8 +48,11 @@ public class ATButtonMessage implements IMessage, IMessageHandler<ATButtonMessag
 		World world = ctx.getServerHandler().playerEntity.worldObj;
 
 		TileEntity tileEntity = world.getTileEntity(message.x, message.y, message.z);
-		if (tileEntity instanceof TileEFurnace) {
-			((TileEFurnace) tileEntity).onButtonPressed(message.buttonId);
+		if (tileEntity instanceof TileSolarInverter) {
+			((TileSolarInverter) tileEntity).onButtonPressed(message.buttonId);
+		}
+		if (tileEntity instanceof TileHTL) {
+			((TileHTL) tileEntity).onButtonPressed(message.buttonId);
 		}
 		return null;
 	}

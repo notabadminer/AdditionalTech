@@ -9,6 +9,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public class GrinderRecipes {
+	
+	private static final GrinderRecipes instance = new GrinderRecipes();
+
+	public static GrinderRecipes getInstance() {
+		GrinderRecipes.initGrinderRecipes();
+		return instance;
+	}
+
 
 	private static Map<Item, ItemStack> grindingList = new HashMap();
 	private static Map<Item, Float> experienceList = new HashMap();
@@ -48,7 +56,7 @@ public class GrinderRecipes {
 		experienceList.put(input, Float.valueOf(xp));
 	}
 
-	public static ItemStack getGrindingResult(Item item) {
+	public ItemStack getGrindingResult(Item item) {
 		return (ItemStack) grindingList.get(item);
 	}
 

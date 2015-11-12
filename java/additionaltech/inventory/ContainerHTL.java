@@ -26,6 +26,7 @@ public class ContainerHTL extends Container {
 			// the Slot constructor takes the IInventory and the slot number in that
 			// it binds to
 			// and the x-y coordinates it resides on-screen
+			addSlotToContainer(new SlotBattery(tileEntity, TileHTL.slotBattery, 30, 83));
 			addSlotToContainer(new Slot(tileEntity, TileHTL.slotInput, 149, 25));
 			addSlotToContainer(new SlotOutput(tileEntity, TileHTL.slotOutput, 149, 79));
 					

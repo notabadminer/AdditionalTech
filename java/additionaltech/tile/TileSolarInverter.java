@@ -4,6 +4,11 @@ import additionaltech.AdditionalTech;
 import additionaltech.blocks.BlockSolarPanel;
 import additionaltech.net.ATButtonMessage;
 import cofh.api.energy.IEnergyProvider;
+import cofh.api.energy.IEnergyReceiver;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.ISound;
+import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -13,6 +18,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -24,44 +30,51 @@ public class TileSolarInverter extends TileEntity implements IEnergyProvider, II
 	public static final int upgradeSlot1 = 1;
 	public static final int upgradeSlot2 = 2;
 
-	public int energy = 0;
-	public double energyGenerated;
-	public double maxTransfer = 40;
-	public int maxEnergy = 1000;
-	ForgeDirection orientation = ForgeDirection.UP;
+	public int rfLevel = 0;
+	public int rfGenerated = 0;
+	public int lastGenerated = 0;
+	public int maxTransfer = 500;
+	public int maxEnergy = 10000;
 	public ForgeDirection powerReceiverDirection = null;
 	public int panelCount = 0;
 	public int panelMax = 9;
-	
+
 	public TileSolarInverter() {
 		super();
 		inventory = new ItemStack[invSize];
 	}
 
 	public void updateEntity() {
-		super.updateEntity();
 		generatePower();
-	}
-	
-	public void onResetButtonPressed() {
-		scanArea();
+		sendPower();
+
+		if (worldObj.isRemote && rfGenerated > 0) {
+			worldObj.playSound(xCoord, yCoord, zCoord, "additionaltech:inverterHum", 1.0F, 1.0F, true);
 		}
-		
+	}
+
+	public void onButtonPressed(int button) {
+		if (button == 0) {
+			scanArea();
+			resetPowerDirection();
+		}
+	}
+
 	public void scanArea() {
-		
+
 		if (this.worldObj.isRemote) {
 			return;
 		}
-		
+
 		int xOffset = 0;
 		boolean xNegResult = false;
 		boolean xPosResult = false;
-		
+
 		// scan along x axis for solarpanels
 		while (xOffset <= 20) {
 			int startCount = panelCount;
 			xNegResult = checkSolarPanel(xCoord - xOffset, yCoord, zCoord);
-			//FMLLog.info("Scanning xOffset: " + xOffset);
+			// FMLLog.info("Scanning xOffset: " + xOffset);
 			zScan(xCoord - xOffset, yCoord, zCoord);
 			xPosResult = checkSolarPanel(xCoord + xOffset, yCoord, zCoord);
 			zScan(xCoord + xOffset, yCoord, zCoord);
@@ -69,10 +82,10 @@ public class TileSolarInverter extends TileEntity implements IEnergyProvider, II
 			if (panelCount == 0 && xOffset > 0) {
 				return;
 			}
-				xOffset++;
+			xOffset++;
 		}
 	}
-	
+
 	public void zScan(int xPOS, int yPOS, int zPOS) {
 
 		int zOffset = 1;
@@ -80,26 +93,28 @@ public class TileSolarInverter extends TileEntity implements IEnergyProvider, II
 		boolean zPosResult = false;
 
 		while (zOffset <= 20) {
-			//FMLLog.info("Scanning zOffset: " + zOffset);
+			// FMLLog.info("Scanning zOffset: " + zOffset);
 			zNegResult = (checkSolarPanel(xPOS, yPOS, zPOS - zOffset));
 			zPosResult = (checkSolarPanel(xPOS, yPOS, zPOS + zOffset));
-				
+
 			if (zNegResult || zPosResult) {
 				zOffset++;
-			} else return;
+			} else
+				return;
 		}
 	}
-	
+
 	public boolean checkSolarPanel(int xPOS, int yPOS, int zPOS) {
 		if (worldObj.getBlock(xPOS, yPOS, zPOS) instanceof BlockSolarPanel) {
-			//if the solar panel cannot see daylight, disable it
+			// if the solar panel cannot see daylight, disable it
 			if (!worldObj.canBlockSeeTheSky(xPOS, yPOS, zPOS)) {
 				worldObj.setBlockMetadataWithNotify(xPOS, yPOS, zPOS, 1, 2);
 			}
 			int blockMeta = worldObj.getBlockMetadata(xPOS, yPOS, zPOS);
 			if (blockMeta == 0 && panelCount < panelMax) {
 				panelCount++;
-				//FMLLog.info("Found another solar panel. Count: " + panelCount);
+				// FMLLog.info("Found another solar panel. Count: " +
+				// panelCount);
 				worldObj.setBlockMetadataWithNotify(xPOS, yPOS, zPOS, 1, 2);
 			}
 			return true;
@@ -107,17 +122,8 @@ public class TileSolarInverter extends TileEntity implements IEnergyProvider, II
 		return false;
 	}
 
-	public void findPowerReceiver() {
-		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-			TileEntity tile = worldObj.getTileEntity(
-					xCoord + direction.offsetX, yCoord + direction.offsetY,
-					zCoord + direction.offsetZ);
-			
-		}
-	}
-	
 	public void checkUpgrades() {
-		//reset panalMax to default
+		// reset panalMax to default
 		panelMax = 9;
 		if (!worldObj.isRemote) {
 			for (int i = 0; i < inventory.length; i++) {
@@ -126,9 +132,9 @@ public class TileSolarInverter extends TileEntity implements IEnergyProvider, II
 					if (stack.getItem() == AdditionalTech.proxy.itemInverterCore) {
 						panelMax += 9;
 					} else if (stack.getItem() == AdditionalTech.proxy.itemStageTwoCore) {
-						panelMax += 24;
+						panelMax += 25;
 					} else if (stack.getItem() == AdditionalTech.proxy.itemStageThreeCore) {
-						panelMax += 50;
+						panelMax += 52;
 					}
 				}
 			}
@@ -136,26 +142,32 @@ public class TileSolarInverter extends TileEntity implements IEnergyProvider, II
 	}
 
 	public void generatePower() {
-		if (!worldObj.isRemote && worldObj.isDaytime()
-				&& (!worldObj.isRaining() && !worldObj.isThundering())) {
-			energyGenerated = panelCount * 2.5;
-			if (energyGenerated > 0) {
-				if (energy + energyGenerated > maxEnergy) {
-					energyGenerated = maxEnergy - energy;
-					energy += energyGenerated;
+		if (worldObj.isRemote)
+			return;
+		if (worldObj.isDaytime() && (!worldObj.isRaining() && !worldObj.isThundering())) {
+			rfGenerated = panelCount * 3;
+			if (rfGenerated > 0) {
+				if (rfLevel + rfGenerated > maxEnergy) {
+					rfGenerated = maxEnergy - rfLevel;
+					rfLevel += rfGenerated;
 				} else
-					energy += energyGenerated;
+					rfLevel += rfGenerated;
 			}
+		} else {
+			rfGenerated = 0;
+			updateTE();
+		}
+		if (lastGenerated != rfGenerated) {
+			lastGenerated = rfGenerated;
+			updateTE();
 		}
 	}
 
-
 	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
 		return worldObj.getTileEntity(xCoord, yCoord, zCoord) == this
-				&& entityplayer.getDistanceSq(xCoord + 0.5, yCoord + 0.5,
-						zCoord + 0.5) < 64;
+				&& entityplayer.getDistanceSq(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5) < 64;
 	}
-	
+
 	public void sendPacket(int button, boolean shiftPressed) {
 		AdditionalTech.snw.sendToServer(new ATButtonMessage(xCoord, yCoord, zCoord, button, shiftPressed));
 	}
@@ -179,8 +191,7 @@ public class TileSolarInverter extends TileEntity implements IEnergyProvider, II
 	@Override
 	public void readFromNBT(NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
-		NBTTagList tagList = tagCompound.getTagList("Inventory",
-				Constants.NBT.TAG_COMPOUND);
+		NBTTagList tagList = tagCompound.getTagList("Inventory", Constants.NBT.TAG_COMPOUND);
 		for (int i = 0; i < tagList.tagCount(); i++) {
 			NBTTagCompound tag = (NBTTagCompound) tagList.getCompoundTagAt(i);
 			byte slot = tag.getByte("Slot");
@@ -199,9 +210,19 @@ public class TileSolarInverter extends TileEntity implements IEnergyProvider, II
 			panelMax = 9;
 		}
 		try {
-			energy = tagCompound.getInteger("EnergyLevel");
+			rfLevel = tagCompound.getInteger("rfLevel");
 		} catch (Throwable ex2) {
-			energy = 0;
+			rfLevel = 0;
+		}
+		try {
+			rfGenerated = tagCompound.getInteger("rfGenerated");
+		} catch (Throwable ex2) {
+			rfGenerated = 0;
+		}
+		try {
+			powerReceiverDirection = ForgeDirection.getOrientation(tagCompound.getInteger("powerReceiverDirection"));
+		} catch (Throwable ex2) {
+			powerReceiverDirection = null;
 		}
 	}
 
@@ -221,9 +242,15 @@ public class TileSolarInverter extends TileEntity implements IEnergyProvider, II
 		tagCompound.setTag("Inventory", itemList);
 		tagCompound.setInteger("SolarPanels", panelCount);
 		tagCompound.setInteger("MaxSolarPanels", panelMax);
-		tagCompound.setDouble("EnergyLevel", energy);
+		tagCompound.setInteger("rfLevel", rfLevel);
+		tagCompound.setInteger("rfGenerated", rfGenerated);
+		if (powerReceiverDirection != null) {
+			tagCompound.setInteger("powerReceiverDirection", powerReceiverDirection.ordinal());
+		} else {
+			tagCompound.setInteger("powerReceiverDirection", -1);
+		}
 	}
-	
+
 	@Override
 	public int getSizeInventory() {
 		return inventory.length;
@@ -262,7 +289,8 @@ public class TileSolarInverter extends TileEntity implements IEnergyProvider, II
 		if (stack != null && stack.stackSize > getInventoryStackLimit()) {
 			stack.stackSize = getInventoryStackLimit();
 		}
-		//we need to adjust the panel max since the upgrade slot inventory has changed
+		// we need to adjust the panel max since the upgrade slot inventory has
+		// changed
 		checkUpgrades();
 	}
 
@@ -300,13 +328,16 @@ public class TileSolarInverter extends TileEntity implements IEnergyProvider, II
 	}
 
 	@Override
-	public int extractEnergy(ForgeDirection arg0, int arg1, boolean arg2) {
-		return 10;
+	public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate) {
+		if (!simulate) {
+			rfLevel -= maxExtract;
+		}
+		return Math.min(rfLevel, 400);
 	}
 
 	@Override
 	public int getEnergyStored(ForgeDirection arg0) {
-		return energy;
+		return rfLevel;
 	}
 
 	@Override
@@ -314,4 +345,30 @@ public class TileSolarInverter extends TileEntity implements IEnergyProvider, II
 		return maxEnergy;
 	}
 
+	protected void sendPower() {
+		if (powerReceiverDirection == null) {
+			return;
+		}
+		TileEntity tile = worldObj.getTileEntity(xCoord + powerReceiverDirection.offsetX,
+				yCoord + powerReceiverDirection.offsetY, zCoord + powerReceiverDirection.offsetZ);
+		if (tile != null && tile instanceof IEnergyReceiver) {
+			IEnergyReceiver handler = (IEnergyReceiver) tile;
+			int maxRF = handler.receiveEnergy(powerReceiverDirection.getOpposite(), Math.min(maxTransfer, rfLevel),
+					true);
+			rfLevel -= handler.receiveEnergy(powerReceiverDirection.getOpposite(), maxRF, false);
+
+		} else {
+			powerReceiverDirection = null;
+		}
+	}
+
+	public void resetPowerDirection() {
+		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+			TileEntity tile = worldObj.getTileEntity(xCoord + direction.offsetX, yCoord + direction.offsetY,
+					zCoord + direction.offsetZ);
+			if (tile instanceof IEnergyReceiver) {
+				powerReceiverDirection = direction;
+			}
+		}
+	}
 }

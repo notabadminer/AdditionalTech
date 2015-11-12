@@ -15,8 +15,8 @@ public class ContainerSolarInverter extends Container {
 	private TileSolarInverter tileEntity;
 	int lastPanelCount;
 	int lastPanelMax;
-	double lastEnergy;
-	double lastEnergyGenerated;
+	int lastRfLevel;
+	int lastRfGenerated;
 	
 	public ContainerSolarInverter(InventoryPlayer inventoryPlayer, TileSolarInverter tEntity) {
 		tileEntity = tEntity;
@@ -184,28 +184,18 @@ public class ContainerSolarInverter extends Container {
         {
             ICrafting icrafting = (ICrafting)this.crafters.get(i);
 
-            if (this.lastPanelCount != this.tileEntity.panelCount)
-            {
-                icrafting.sendProgressBarUpdate(this, 0, this.tileEntity.panelCount);
-            }
-            if (this.lastPanelMax != this.tileEntity.panelMax)
-            {
-                icrafting.sendProgressBarUpdate(this, 1, this.tileEntity.panelMax);
-            }
-            if (this.lastEnergy != this.tileEntity.energy)
-            {
-                icrafting.sendProgressBarUpdate(this, 2, (int) this.tileEntity.energy);
-            }
-            if (this.lastEnergyGenerated != this.tileEntity.energyGenerated )
-            {
-                icrafting.sendProgressBarUpdate(this, 3, (int) this.tileEntity.energyGenerated);
+            if (this.lastPanelCount != this.tileEntity.panelCount
+            		|| this.lastPanelMax != this.tileEntity.panelMax
+            		|| this.lastRfLevel != this.tileEntity.rfLevel
+            		|| this.lastRfGenerated != this.tileEntity.rfGenerated ) {
+            		tileEntity.updateTE();
             }
         }
 
         this.lastPanelCount = this.tileEntity.panelCount;
         this.lastPanelMax = this.tileEntity.panelMax;
-        this.lastEnergy = this.tileEntity.energy;
-        this.lastEnergyGenerated = this.tileEntity.energyGenerated;
+        this.lastRfLevel = this.tileEntity.rfLevel;
+        this.lastRfGenerated = this.tileEntity.rfGenerated;
     }
     
     @SideOnly(Side.CLIENT)
@@ -221,11 +211,11 @@ public class ContainerSolarInverter extends Container {
         }
         if (par1 == 2)
         {
-            this.tileEntity.energy = par2;
+            this.tileEntity.rfLevel = par2;
         }
         if (par1 == 3)
         {
-            this.tileEntity.energyGenerated = par2;
+            this.tileEntity.rfGenerated = par2;
         }
     }
 

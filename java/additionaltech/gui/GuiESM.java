@@ -75,7 +75,7 @@ public class GuiESM extends GuiContainer {
 			if (mouseY > boxY && mouseY < boxY + sizeY) {
 				//do something!!!!
 				List list = new ArrayList();
-				list.add(tileEntity.energyLevel + " RF");
+				list.add(tileEntity.rfLevel + " RF");
 				//list.add(tileEntity.maxEnergy + " RF");
 				this.drawHoveringText(list, (int) mouseX - k, (int) mouseY - l, fontRendererObj);
 			}

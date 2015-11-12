@@ -13,10 +13,12 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
@@ -74,35 +76,46 @@ public class BlockESM extends BlockContainer {
 	public TileEntity createNewTileEntity(World var1, int var2) {
 		return new TileESM();
 	}
-
+	
 	@Override
-	public void breakBlock(World world, int x, int y, int z, Block block,
-			int meta) {
-		super.breakBlock(world, x, y, z, block, meta);
+	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z) {
+		if (!world.isRemote) {
+			if (!player.capabilities.isCreativeMode) {
+				ItemStack stack = getItemStackWithData(world, x, y, z);
+				stack.setItemDamage(world.getBlockMetadata(x, y, z));
+				EntityItem entityItem = new EntityItem(world, x, y, z, stack);
+				world.spawnEntityInWorld(entityItem);
+			}
+			super.removedByPlayer(world, player, x, y, z);
+		}
+		return false;
 	}
-
+	
 	public ItemStack getItemStackWithData(World world, int x, int y, int z) {
-		ItemStack stack = new ItemStack(world.getBlock(x, y, z), 1, 0);
+		ItemStack stack = new ItemStack(world.getBlock(x, y, z), 1);
 		TileEntity tentity = world.getTileEntity(x, y, z);
 		if (tentity instanceof TileESM) {
 			TileESM te = (TileESM) tentity;
-			stack = setItemData(stack, te.maxInput,
-					te.maxOutput);
-			stack.setItemDamage(world.getBlockMetadata(x, y, z));
+			NBTTagList itemList = new NBTTagList();
+			NBTTagCompound tagCompound = new NBTTagCompound();
+			for (int i = 0; i < te.getSizeInventory(); i++) {
+				ItemStack invStack = te.getStackInSlot(i);
+				if (invStack != null) {
+					NBTTagCompound tag = new NBTTagCompound();
+					tag.setByte("Slot", (byte) i);
+					invStack.writeToNBT(tag);
+					itemList.appendTag(tag);
+				}
+			}
+			tagCompound.setTag("Inventory", itemList);
+			tagCompound.setInteger("MaxInput", te.maxInput);
+			tagCompound.setInteger("MaxOutput", te.maxOutput);
+			tagCompound.setInteger("MaxEnergy", te.rfMax);
+			tagCompound.setInteger("EnergyLevel", te.rfLevel);
+			stack.setTagCompound(tagCompound);
 			return stack;
 		} else
 			return stack;
-	}
-
-	public static ItemStack setItemData(ItemStack stack, int maxInput, int maxOutput) {
-		NBTTagCompound tag = stack.getTagCompound();
-		if (tag == null) {
-			tag = new NBTTagCompound();
-		}
-		tag.setInteger("MaxInput", maxInput);
-		tag.setInteger("MaxOutput", maxOutput);
-		stack.setTagCompound(tag);
-		return stack;
 	}
 
 	@Override
@@ -113,7 +126,7 @@ public class BlockESM extends BlockContainer {
 		}
 		// get item meta value and update maxEnergy appropriately
 		int meta = stack.getItemDamage();
-		int maxEnergy = meta == 0 ? 20000 : (meta == 1 ? 40000 : 60000);
+		int maxEnergy = meta == 0 ? 200000 : (meta == 1 ? 400000 : 800000);
 
 		TileEntity te = world.getTileEntity(x, y, z);
 		if (te instanceof TileESM) {
@@ -124,9 +137,20 @@ public class BlockESM extends BlockContainer {
 			}
 			tentity.maxInput = tag.getInteger("MaxInput");
 			tentity.maxOutput = tag.getInteger("MaxOutput");
-			int eLevel = tag.getInteger("EnergyLevel");
+			tentity.rfLevel = tag.getInteger("EnergyLevel");
+			tentity.rfMax = maxEnergy;
+			tentity.findPowerReceiver();
 		}
 		world.markBlockForUpdate(x, y, z);
+	}
+	
+	@Override
+	public void onNeighborBlockChange(World world, int x, int y, int z, Block block) {
+		TileEntity te = world.getTileEntity(x, y, z);
+		if (te instanceof TileESM) {
+			TileESM tentity = (TileESM) te;
+			tentity.findPowerReceiver();
+		}
 	}
 
 	@Override

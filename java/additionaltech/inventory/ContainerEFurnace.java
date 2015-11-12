@@ -187,20 +187,10 @@ public class ContainerEFurnace extends Container {
 	        {
 	            ICrafting icrafting = (ICrafting)this.crafters.get(i);
 
-	            if (this.lastTimer != this.tileEntity.furnaceTimer)
-	            {
-	                icrafting.sendProgressBarUpdate(this, 0, this.tileEntity.furnaceTimer);
-	            }
-	            if (this.lastCookTime != this.tileEntity.furnaceCookTime)
-	            {
-	                icrafting.sendProgressBarUpdate(this, 1, this.tileEntity.furnaceCookTime);
-	            }
-	            if (this.lastEnergyLevel != this.tileEntity.getEnergyLevel())
-	            {
-	                icrafting.sendProgressBarUpdate(this, 2, this.tileEntity.getEnergyLevel());
-	            }
-	            if (this.lastBatteryLevel != this.tileEntity.batteryLevel)
-	            {
+	            if (this.lastTimer != this.tileEntity.furnaceTimer
+	            		|| this.lastCookTime != this.tileEntity.furnaceCookTime
+	            		|| this.lastEnergyLevel != this.tileEntity.getEnergyLevel()
+	            		|| this.lastBatteryLevel != this.tileEntity.batteryLevel) {
 	                tileEntity.updateTE();
 	            }
 	        }
@@ -208,22 +198,5 @@ public class ContainerEFurnace extends Container {
 	        this.lastTimer = this.tileEntity.furnaceTimer;
 	        this.lastEnergyLevel = this.tileEntity.getEnergyLevel();
 	        this.lastBatteryLevel = this.tileEntity.batteryLevel;
-	    }
-	    
-	    @SideOnly(Side.CLIENT)
-	    public void updateProgressBar(int par1, int par2)
-	    {
-	        if (par1 == 0)
-	        {
-	            this.tileEntity.furnaceTimer = par2;
-	        }
-	        if (par1 == 1)
-	        {
-	            this.tileEntity.furnaceCookTime = par2;
-	        }
-	        if (par1 == 2)
-	        {
-	            this.tileEntity.setEnergyLevel(par2);
-	        }
 	    }
 	}

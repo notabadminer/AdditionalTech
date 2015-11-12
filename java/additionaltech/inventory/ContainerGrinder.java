@@ -188,20 +188,10 @@ public class ContainerGrinder extends Container {
 	        {
 	            ICrafting icrafting = (ICrafting)this.crafters.get(i);
 
-	            if (this.lastTimer != this.tileEntity.grindTimer)
-	            {
-	                icrafting.sendProgressBarUpdate(this, 0, this.tileEntity.grindTimer);
-	            }
-	            if (this.lastCookTime != this.tileEntity.grindTime)
-	            {
-	                icrafting.sendProgressBarUpdate(this, 1, this.tileEntity.grindTime);
-	            }
-	            if (this.lastEnergyLevel != this.tileEntity.getEnergyLevel())
-	            {
-	                icrafting.sendProgressBarUpdate(this, 2, this.tileEntity.getEnergyLevel());
-	            }
-	            if (this.lastBatteryLevel != this.tileEntity.batteryLevel)
-	            {
+	            if (this.lastTimer != this.tileEntity.grindTimer 
+	            		|| this.lastCookTime != this.tileEntity.grindTime
+	            		|| this.lastEnergyLevel != this.tileEntity.getEnergyLevel()
+	            		|| this.lastBatteryLevel != this.tileEntity.batteryLevel) {
 	            	tileEntity.updateTE();
 	            }
 	        }
@@ -209,22 +199,5 @@ public class ContainerGrinder extends Container {
 	        this.lastTimer = this.tileEntity.grindTimer;
 	        this.lastEnergyLevel = this.tileEntity.getEnergyLevel();
 	        this.lastBatteryLevel = this.tileEntity.batteryLevel;
-	    }
-	    
-	    @SideOnly(Side.CLIENT)
-	    public void updateProgressBar(int par1, int par2)
-	    {
-	        if (par1 == 0)
-	        {
-	            this.tileEntity.grindTimer = par2;
-	        }
-	        if (par1 == 1)
-	        {
-	            this.tileEntity.grindTime = par2;
-	        }
-	        if (par1 == 2)
-	        {
-	            this.tileEntity.setEnergyLevel(par2);
-	        }
 	    }
 	}

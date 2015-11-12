@@ -25,9 +25,9 @@ import net.minecraftforge.fluids.IFluidHandler;
 
 public class TileHTL extends TileEntity implements IEnergyReceiver, IInventory, IFluidHandler, ISidedInventory {
 	
-	private int energyStored = 0;
-	private int energyMax = 1000;
-	public int energyCost = 4;
+	private int rfLevel = 0;
+	private int rfMax = 10000;
+	public int energyCost = 40;
 	private ItemStack[] inventory = new ItemStack[3];
 	public FluidTank slurrytank = new FluidTank(8000);
 	public FluidTank oiltank = new FluidTank(8000);
@@ -38,7 +38,7 @@ public class TileHTL extends TileEntity implements IEnergyReceiver, IInventory, 
 	public boolean lastActive;
 	public boolean cooldown;
 	public int batteryLevel;
-	public double batteryMax;
+	public int batteryMax;
 	public int slurryLevel;
 	public int oilLevel;
 	public int temp = 70;
@@ -87,7 +87,7 @@ public class TileHTL extends TileEntity implements IEnergyReceiver, IInventory, 
 	}
 	
 	public void processSlurry() {
-		if (energyStored < 4) {
+		if (rfLevel < 40) {
 			cooldown = true;
 		}
 		// disable button
@@ -109,21 +109,21 @@ public class TileHTL extends TileEntity implements IEnergyReceiver, IInventory, 
 				//TODO play compressor sound
 				//consume 8k MJ here
 				pressure++;
-				energyStored -= energyCost;
+				rfLevel -= energyCost;
 				return;
 			}
 			// raise temp
 			if (temp < 600) {
 				//consume 2.4k MJ here
 				temp++;
-				energyStored -= energyCost;
+				rfLevel -= energyCost;
 				return;
 			}
 			// cook
 			if (slurrytank.getFluidAmount() > 0) {
 				int cookRate = 1;
 				//consume 4k per 1000MB here
-				energyStored -= energyCost;
+				rfLevel -= energyCost;
 				slurrytank.drain(cookRate * 3, true);
 				oiltank.fill(FluidRegistry.getFluidStack("oil", cookRate), true);
 			} else cooldown = true;
@@ -134,15 +134,14 @@ public class TileHTL extends TileEntity implements IEnergyReceiver, IInventory, 
 		if (worldObj.isRemote) {
 			return;
 		}
-		if (inventory[slot].getItem() == AdditionalTech.proxy.itemBucketSlurry && inventory[slotOutput] == null) {
+		if (inventory[slot] != null && inventory[slot].getItem() == AdditionalTech.proxy.itemBucketSlurry && inventory[slotOutput] == null) {
 			inventory[slotInput] = null;
 			int used = slurrytank
 					.fill(new FluidStack(FluidRegistry.getFluid("algaeslurry"),
 							1000), true);
 			inventory[slotOutput] = new ItemStack(Items.bucket);
-			markDirty();
 		}
-		if (inventory[slot].getItem() == Items.bucket && oiltank.getFluidAmount() > 1000 
+		if (inventory[slot] != null && inventory[slot].getItem() == Items.bucket && oiltank.getFluidAmount() > 1000 
 				&& inventory[slotOutput] == null) {
 			inventory[slotInput].stackSize--;
 			if (inventory[slotInput].stackSize == 0) {
@@ -150,8 +149,8 @@ public class TileHTL extends TileEntity implements IEnergyReceiver, IInventory, 
 			}
 			oiltank.drain(1000, true);
 			inventory[slotOutput] = new ItemStack(AdditionalTech.proxy.itemBucketOil);
-			markDirty();
 		}
+		updateTE();
 	}
 
 	@Override
@@ -208,15 +207,26 @@ public class TileHTL extends TileEntity implements IEnergyReceiver, IInventory, 
 	}
 	
 	public int getEnergyLevel() {
-    	return (int) this.energyStored;
+    	return this.rfLevel;
     }
     
     public void setEnergyLevel(int energy) {
-    	this.energyStored = energy;
+    	this.rfLevel = energy;
     }
     
+    @Override
+	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
+		int amountReceived = Math.min(maxReceive, rfMax - rfLevel);
+
+		if (!simulate) {
+			rfLevel += amountReceived;
+		}
+
+		return amountReceived;
+	}
+    
     public int getEnergyLevelScaled(int scale) {
-        return (int) (this.energyStored * scale / 2000);
+        return (this.rfLevel * scale / rfMax);
     }
     
     public int getBatteryLevelScaled(int scale) {
@@ -321,8 +331,10 @@ public class TileHTL extends TileEntity implements IEnergyReceiver, IInventory, 
 		return false;
 	}
 	
-	public void onPowerButtonPressed() {
+	public void onButtonPressed(int button) {
+		if (button == 0) {
 			isActive = true;
+		}
 	}
 	
 	public void sendPacket(int button, boolean shiftPressed) {
@@ -364,7 +376,8 @@ public class TileHTL extends TileEntity implements IEnergyReceiver, IInventory, 
 		tagCompound.setInteger("Pressure", pressure);
 		tagCompound.setInteger("Temp", temp);
 		tagCompound.setBoolean("isActive", isActive);
-		
+		tagCompound.setInteger("BatteryLevel", batteryLevel);
+		tagCompound.setInteger("BatteryMax", batteryMax);		
 	}
 
 	@Override
@@ -407,6 +420,16 @@ public class TileHTL extends TileEntity implements IEnergyReceiver, IInventory, 
 		} catch (Throwable ex2) {
 			isActive = false;
 		}
+		try {
+			batteryLevel = tagCompound.getInteger("BatteryLevel");
+		} catch (Throwable ex2) {
+			batteryLevel = 0;
+		}
+		try {
+			batteryMax = tagCompound.getInteger("BatteryMax");
+		} catch (Throwable ex2) {
+			batteryMax = 0;
+		}
 	}
 
 	@Override
@@ -432,25 +455,24 @@ public class TileHTL extends TileEntity implements IEnergyReceiver, IInventory, 
 		if (this.inventory[slotBattery] != null) {
 			NBTTagCompound tag = inventory[slotBattery].getTagCompound();
 			if (tag == null) {
-				//ESM must be new. We'll init NBT values
-				//we need to get tier first
+				// ESM must be new. We'll init NBT values
+				// we need to get tier first
 				int esmTier = inventory[slotBattery].getItemDamage();
 				tag = new NBTTagCompound();
 				tag.setInteger("EnergyLevel", 0);
-				tag.setDouble("MaxInput", 40);
-				tag.setDouble("MaxOutput", 40);
-				tag.setDouble("MaxEnergy", esmTier == 0 ? 20000 : (esmTier == 1 ? 40000 : 60000));
+				tag.setInteger("MaxInput", 400);
+				tag.setInteger("MaxOutput", 400);
+				tag.setInteger("MaxEnergy", esmTier == 0 ? 200000 : (esmTier == 1 ? 400000 : 600000));
 				inventory[slotBattery].setTagCompound(tag);
 			}
 			batteryLevel = tag.getInteger("EnergyLevel");
-			batteryMax = tag.getDouble("MaxEnergy");
-			if (energyStored / 2000 < 0.05 && batteryLevel > 40) {
-				tag.setInteger("EnergyLevel", batteryLevel - 40);
-				energyStored += 40;
-			} else if (energyStored / 2000 > 0.95
-					&& batteryLevel < batteryMax) {
-				tag.setInteger("EnergyLevel", batteryLevel + 40);
-				energyStored -= 40;
+			batteryMax = tag.getInteger("MaxEnergy");
+			if ((double)rfLevel / (double)rfMax < 0.05 && batteryLevel > 200) {
+				tag.setInteger("EnergyLevel", batteryLevel - 200);
+				rfLevel += 200;
+			} else if ((double)rfLevel / (double)rfMax > 0.95 && batteryLevel < batteryMax) {
+				tag.setInteger("EnergyLevel", Math.min(batteryLevel + 200, batteryMax));
+				rfLevel -= 200;
 			}
 		}
 	}
@@ -461,18 +483,13 @@ public class TileHTL extends TileEntity implements IEnergyReceiver, IInventory, 
 	}
 
 	@Override
-	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
-		return 20;
-	}
-
-	@Override
 	public int getEnergyStored(ForgeDirection from) {
-		return energyStored;
+		return rfLevel;
 	}
 
 	@Override
 	public int getMaxEnergyStored(ForgeDirection from) {
-		return energyMax;
+		return rfMax;
 	}
 
 }

@@ -184,13 +184,13 @@ public class ContainerESM extends Container {
 	        {
 	            ICrafting icrafting = (ICrafting)this.crafters.get(i);
 
-	            if (this.lastEnergyLevel != this.tileEntity.energyLevel)
+	            if (this.lastEnergyLevel != this.tileEntity.rfLevel)
 	            {
-	                icrafting.sendProgressBarUpdate(this, 0, this.tileEntity.energyLevel);
+	                icrafting.sendProgressBarUpdate(this, 0, this.tileEntity.rfLevel);
 	            }
-	            if (this.lastMaxEnergy != this.tileEntity.maxEnergy)
+	            if (this.lastMaxEnergy != this.tileEntity.rfMax)
 	            {
-	                icrafting.sendProgressBarUpdate(this, 1, (int) this.tileEntity.maxEnergy);
+	                icrafting.sendProgressBarUpdate(this, 1, (int) this.tileEntity.rfMax);
 	            }
 	            if (this.lastMaxInput != this.tileEntity.maxInput)
 	            {
@@ -202,17 +202,17 @@ public class ContainerESM extends Container {
 	            }
 	        }
 
-	        this.lastEnergyLevel = this.tileEntity.energyLevel;
+	        this.lastEnergyLevel = this.tileEntity.rfLevel;
 	    }
 	    
 	    @SideOnly(Side.CLIENT)
 	    public void updateProgressBar(int par1, int par2)
 	    {
 	        if (par1 == 0) {
-	            this.tileEntity.energyLevel = par2;
+	            this.tileEntity.rfLevel = par2;
 	        }
 	        if (par1 == 1) {
-	            this.tileEntity.maxEnergy = par2;
+	            this.tileEntity.rfMax = par2;
 	        }
 	        if (par1 == 2) {
 	            this.tileEntity.maxInput = par2;

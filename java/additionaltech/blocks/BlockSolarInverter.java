@@ -95,11 +95,12 @@ public class BlockSolarInverter extends BlockContainer {
 	
 	@Override
 	public void onNeighborBlockChange (World world, int x, int y, int z, Block block){
+		TileSolarInverter tileEntity = (TileSolarInverter) world.getTileEntity(x, y, z);
     	if (block instanceof BlockSolarPanel){
-    		//FMLLog.info("Additional Tech: block break detected. Disabling power generation.");
-    		TileSolarInverter tileEntity = (TileSolarInverter) world.getTileEntity(x, y, z);
+    		//FMLLog.info("Additional Tech: block break detected. Disabling power generation.");		
     		tileEntity.panelCount = 0;
     	}
+    	tileEntity.resetPowerDirection();
 	}
 
 	@Override

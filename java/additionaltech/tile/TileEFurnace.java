@@ -20,8 +20,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEFurnace extends TileEntity implements IEnergyReceiver, IInventory, ISidedInventory {
 
-	private int energyStored = 0;
-	private int energyMax = 10000;
+	private int rfLevel = 0;
+	private int rfMax = 10000;
 	public int energyCost = 20;
 	private ItemStack[] inventory = new ItemStack[6];
 	public int furnaceTimer;
@@ -29,8 +29,7 @@ public class TileEFurnace extends TileEntity implements IEnergyReceiver, IInvent
 	public boolean isActive;
 	public boolean lastActive;
 	public int batteryLevel;
-	private int lastBatteryLevel;
-	public double batteryMax;
+	public int batteryMax;
 	public boolean currentState = false;
 	public static final int slotInput = 0;
 	public static final int slotOutput = 1;
@@ -47,36 +46,29 @@ public class TileEFurnace extends TileEntity implements IEnergyReceiver, IInvent
 
 	@Override
 	public void updateEntity() {
-
-		boolean flag1 = false;
-
 		if (worldObj.isRemote) {
 			return;
 		}
 
-		if (this.canSmelt() && energyStored > energyCost) {
+		if (this.canSmelt() && rfLevel > energyCost) {
 			isActive = true;
 			furnaceTimer++;
-			energyStored -= energyCost;
+			rfLevel -= energyCost;
 
 			if (this.furnaceTimer >= this.furnaceCookTime) {
 				this.furnaceTimer = 0;
 				this.smeltItem();
-				flag1 = true;
 			}
 		} else {
 			isActive = false;
 			this.furnaceTimer = 0;
 		}
+		accessBattery();
 
-		if (flag1) {
-			this.markDirty();
-		}
 		if (isActive != lastActive) {
 			lastActive = isActive;
 			updateBlock();
 		}
-		accessBattery();
 	}
 
 	private void updateBlock() {
@@ -142,11 +134,11 @@ public class TileEFurnace extends TileEntity implements IEnergyReceiver, IInvent
 	public ItemStack decrStackSize(int par1, int par2) {
 		if (this.inventory[par1] != null) {
 			ItemStack itemstack;
-			checkUpgrades();
 
 			if (this.inventory[par1].stackSize <= par2) {
 				itemstack = this.inventory[par1];
 				this.inventory[par1] = null;
+				checkUpgrades();
 				return itemstack;
 			} else {
 				itemstack = this.inventory[par1].splitStack(par2);
@@ -154,7 +146,7 @@ public class TileEFurnace extends TileEntity implements IEnergyReceiver, IInvent
 				if (this.inventory[par1].stackSize == 0) {
 					this.inventory[par1] = null;
 				}
-
+				checkUpgrades();
 				return itemstack;
 			}
 		} else {
@@ -207,15 +199,15 @@ public class TileEFurnace extends TileEntity implements IEnergyReceiver, IInvent
 	}
 
 	public int getEnergyLevel() {
-		return (int) energyStored;
+		return rfLevel;
 	}
 
 	public void setEnergyLevel(int energy) {
-		this.energyStored = energy;
+		this.rfLevel = energy;
 	}
 
 	public int getEnergyLevelScaled(int scale) {
-		return (int) (energyStored * scale / energyMax);
+		return (int) (rfLevel * scale / rfMax);
 	}
 
 	public int getBatteryLevelScaled(int scale) {
@@ -284,8 +276,12 @@ public class TileEFurnace extends TileEntity implements IEnergyReceiver, IInvent
 			}
 		}
 		tagCompound.setTag("Inventory", itemList);
-		tagCompound.setDouble("EnergyLevel", energyStored);
+		tagCompound.setInteger("EnergyLevel", rfLevel);
+		tagCompound.setInteger("EnergyMax", rfMax);
+		tagCompound.setInteger("BatteryLevel", batteryLevel);
+		tagCompound.setInteger("BatteryMax", batteryMax);
 		tagCompound.setBoolean("LastActive", lastActive);
+		tagCompound.setInteger("FurnaceTimer", furnaceTimer);
 		tagCompound.setInteger("CookTime", furnaceCookTime);
 	}
 
@@ -301,14 +297,34 @@ public class TileEFurnace extends TileEntity implements IEnergyReceiver, IInvent
 			}
 		}
 		try {
-			energyStored = tagCompound.getInteger("EnergyLevel");
+			rfLevel = tagCompound.getInteger("EnergyLevel");
 		} catch (Throwable ex2) {
-			energyStored = 0;
+			rfLevel = 0;
+		}
+		try {
+			rfMax = tagCompound.getInteger("EnergyMax");
+		} catch (Throwable ex2) {
+			rfMax = 10000;
+		}
+		try {
+			batteryLevel = tagCompound.getInteger("BatteryLevel");
+		} catch (Throwable ex2) {
+			batteryLevel = 0;
+		}
+		try {
+			batteryMax = tagCompound.getInteger("BatteryMax");
+		} catch (Throwable ex2) {
+			batteryMax = 0;
 		}
 		try {
 			lastActive = tagCompound.getBoolean("LastActive");
 		} catch (Throwable ex2) {
 			lastActive = false;
+		}
+		try {
+			furnaceTimer = tagCompound.getInteger("FurnaceTimer");
+		} catch (Throwable ex2) {
+			furnaceTimer = 0;
 		}
 		try {
 			furnaceCookTime = tagCompound.getInteger("CookTime");
@@ -330,19 +346,19 @@ public class TileEFurnace extends TileEntity implements IEnergyReceiver, IInvent
 				int esmTier = inventory[slotBattery].getItemDamage();
 				tag = new NBTTagCompound();
 				tag.setInteger("EnergyLevel", 0);
-				tag.setInteger("MaxInput", 40);
-				tag.setInteger("MaxOutput", 40);
-				tag.setInteger("MaxEnergy", esmTier == 0 ? 20000 : (esmTier == 1 ? 40000 : 60000));
+				tag.setInteger("MaxInput", 400);
+				tag.setInteger("MaxOutput", 400);
+				tag.setInteger("MaxEnergy", esmTier == 0 ? 200000 : (esmTier == 1 ? 400000 : 600000));
 				inventory[slotBattery].setTagCompound(tag);
 			}
 			batteryLevel = tag.getInteger("EnergyLevel");
 			batteryMax = tag.getInteger("MaxEnergy");
-			if (energyStored / 2000 < 0.05 && batteryLevel > 40) {
-				tag.setInteger("EnergyLevel", batteryLevel - 40);
-				energyStored += 40;
-			} else if (energyStored / 2000 > 0.95 && batteryLevel < batteryMax) {
-				tag.setInteger("EnergyLevel", batteryLevel + 40);
-				energyStored -= 40;
+			if ((double)rfLevel / (double)rfMax < 0.05 && batteryLevel > 200) {
+				tag.setInteger("EnergyLevel", batteryLevel - 200);
+				rfLevel += 200;
+			} else if ((double)rfLevel / (double)rfMax > 0.95 && batteryLevel < batteryMax) {
+				tag.setInteger("EnergyLevel", Math.min(batteryLevel + 200, batteryMax));
+				rfLevel -= 200;
 			}
 		}
 	}
@@ -398,10 +414,10 @@ public class TileEFurnace extends TileEntity implements IEnergyReceiver, IInvent
 
 	@Override
 	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
-		int amountReceived = Math.min(maxReceive, energyMax - energyStored);
+		int amountReceived = Math.min(maxReceive, rfMax - rfLevel);
 
 		if (!simulate) {
-			energyStored += amountReceived;
+			rfLevel += amountReceived;
 		}
 
 		return amountReceived;
@@ -409,16 +425,11 @@ public class TileEFurnace extends TileEntity implements IEnergyReceiver, IInvent
 
 	@Override
 	public int getEnergyStored(ForgeDirection from) {
-		return energyStored;
+		return rfLevel;
 	}
 
 	@Override
 	public int getMaxEnergyStored(ForgeDirection from) {
-		return energyMax;
-	}
-
-	public void onButtonPressed(int buttonId) {
-		// TODO Auto-generated method stub
-
+		return rfMax;
 	}
 }

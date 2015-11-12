@@ -18,10 +18,10 @@ import net.minecraftforge.common.util.ForgeDirection;
 public class TileESM extends TileEntity implements IEnergyHandler, IInventory {
 
 	private ItemStack[] inventoryItemStacks = new ItemStack[1];
-	public int energyLevel;
+	public int rfLevel;
 	public int maxInput = 400;
 	public int maxOutput = 400;
-	public int maxEnergy = 200000;
+	public int rfMax = 200000;
 	public ForgeDirection powerReceiverDirection = null;
 	public boolean isRedstonePowered = false;
 
@@ -33,7 +33,7 @@ public class TileESM extends TileEntity implements IEnergyHandler, IInventory {
 		if (worldObj.isRemote) return;
 		checkRedstonePower();
 		if (!isRedstonePowered) {
-			//transferEnergy();
+			transferEnergy();
 		}
 	}
 
@@ -41,8 +41,12 @@ public class TileESM extends TileEntity implements IEnergyHandler, IInventory {
 		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 			TileEntity tile = worldObj.getTileEntity(xCoord + direction.offsetX, yCoord + direction.offsetY, zCoord + direction.offsetZ);
 			if (tile != null && tile instanceof IEnergyReceiver) {
-				powerReceiverDirection = direction;
-				return;
+				IEnergyReceiver reciever = (IEnergyReceiver) tile;
+				int maxEnergy = reciever.receiveEnergy(direction.getOpposite(), Math.min(this.rfLevel, maxOutput), true);
+				if (maxEnergy > 0) {
+					powerReceiverDirection = direction;
+					return;
+				}
 			}
 		}
 	}
@@ -52,7 +56,7 @@ public class TileESM extends TileEntity implements IEnergyHandler, IInventory {
 	}
 
 	public double getEnergyLevelScaled(int scale) {
-		return this.energyLevel * scale / maxEnergy;
+		return this.rfLevel * scale / rfMax;
 	}
 
 	@Override
@@ -98,8 +102,8 @@ public class TileESM extends TileEntity implements IEnergyHandler, IInventory {
 		NBTTagCompound tag = new NBTTagCompound();
 		tagCompound.setInteger("MaxInput", maxInput);
 		tagCompound.setInteger("MaxOutput", maxOutput);
-		tagCompound.setInteger("MaxEnergy", maxEnergy);
-		tagCompound.setInteger("EnergyLevel", energyLevel);
+		tagCompound.setInteger("MaxEnergy", rfMax);
+		tagCompound.setInteger("EnergyLevel", rfLevel);
 	}
 
 	@Override
@@ -116,12 +120,12 @@ public class TileESM extends TileEntity implements IEnergyHandler, IInventory {
 			// fail quietly
 		}
 		try {
-			maxEnergy = tagCompound.getInteger("MaxEnergy");
+			rfMax = tagCompound.getInteger("MaxEnergy");
 		} catch (Throwable ex2) {
 			// fail quietly
 		}
 		try {
-			energyLevel = tagCompound.getInteger("EnergyLevel");
+			rfLevel = tagCompound.getInteger("EnergyLevel");
 		} catch (Throwable ex2) {
 			// fail quietly
 		}
@@ -173,10 +177,10 @@ public class TileESM extends TileEntity implements IEnergyHandler, IInventory {
 
 	@Override
 	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
-		int amountReceived = Math.min(maxReceive, maxEnergy - energyLevel);
+		int amountReceived = Math.min(maxReceive, rfMax - rfLevel);
 
 		if (!simulate) {
-			energyLevel += amountReceived;
+			rfLevel += amountReceived;
 		}
 
 		return amountReceived;
@@ -184,38 +188,36 @@ public class TileESM extends TileEntity implements IEnergyHandler, IInventory {
 
 	@Override
 	public int getEnergyStored(ForgeDirection from) {
-		return energyLevel;
+		return rfLevel;
 	}
 
 	@Override
 	public int getMaxEnergyStored(ForgeDirection from) {
-		return maxEnergy;
+		return rfMax;
 	}
 
 	@Override
 	public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate) {
 		FMLLog.info("in extractEnergy");
-		int amountExtracted = Math.min(maxExtract, energyLevel);
+		int amountExtracted = Math.min(maxExtract, rfLevel);
 
 		if (!simulate) {
-			energyLevel -= amountExtracted;
+			rfLevel -= amountExtracted;
 		}
 
 		return amountExtracted;
 	}
 
 	protected void transferEnergy() {
-		FMLLog.info("in transferEnergy");
 		if (powerReceiverDirection == null) {
-			findPowerReceiver();
+			//do nothing
 		} else {
 			TileEntity tile = worldObj.getTileEntity(xCoord + powerReceiverDirection.offsetX,
 					yCoord + powerReceiverDirection.offsetY, zCoord + powerReceiverDirection.offsetZ);
 			if (tile != null && tile instanceof IEnergyReceiver) {
-				FMLLog.info("found IEnergyReceiver");
-				int used = ((IEnergyReceiver) tile).receiveEnergy(powerReceiverDirection.getOpposite(), Math.min(maxOutput, energyLevel), false);
+				int used = ((IEnergyReceiver) tile).receiveEnergy(powerReceiverDirection.getOpposite(), Math.min(maxOutput, rfLevel), false);
 				if (used > 0) {
-					energyLevel -= used;
+					rfLevel -= used;
 					updateTE();
 				}
 			} else {
