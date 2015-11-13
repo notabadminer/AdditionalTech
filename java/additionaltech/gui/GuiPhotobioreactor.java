@@ -31,43 +31,10 @@ public class GuiPhotobioreactor extends GuiContainer {
     	// draws "Inventory" or your regional equivalent
     	fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 6, ySize - 96 + 2, 4210752);
     	
-    	//draw tooltip for water level
-		int k = (this.width - this.xSize) / 2; // X asis on GUI
-		int l = (this.height - this.ySize) / 2; // Y asis on GUI
-		int boxX = k + 70;
-		int boxY = l + 16;
-		int sizeX = 15;
-		int sizeY = 57;
-		
-		if (mouseX > boxX && mouseX < boxX + sizeX) 
-		{
-			if (mouseY > boxY && mouseY < boxY + sizeY) {
-				List list = new ArrayList();
-				list.add(tileEntity.waterLevel + " MB");
-				this.drawHoveringText(list, (int) mouseX - k, (int) mouseY - l, fontRendererObj);
-			}
-			super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-		}
-		
-		// draw tooltip for slurry level
-		k = (this.width - this.xSize) / 2; // X asis on GUI
-		l = (this.height - this.ySize) / 2; // Y asis on GUI
-		boxX = k + 88;
-		boxY = l + 16;
-		sizeX = 15;
-		sizeY = 57;
-
-		if (mouseX > boxX && mouseX < boxX + sizeX) {
-			if (mouseY > boxY && mouseY < boxY + sizeY) {
-				List list = new ArrayList();
-				list.add(tileEntity.slurryLevel + " MB");
-				this.drawHoveringText(list, (int) mouseX - k, (int) mouseY - l, fontRendererObj);
-			}
-			super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-		}
+    	
     }
 
-    protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3) {
+    protected void drawGuiContainerBackgroundLayer(float par1, int mouseX, int mouseY) {
     	GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
     	
     	int cookingProgress;
@@ -90,5 +57,36 @@ public class GuiPhotobioreactor extends GuiContainer {
        	//draw scale in front of everything
        	this.drawTexturedModalRect(guiWidth + 70, guiHeight + 16, 192, 0, 16, 57);
        	this.drawTexturedModalRect(guiWidth + 88, guiHeight + 16, 192, 0, 16, 57);
+       	
+      //draw tooltip for water level
+      		int boxX = guiWidth + 70;
+      		int boxY = guiHeight + 16;
+      		int sizeX = 15;
+      		int sizeY = 57;
+      		
+      		if (mouseX > boxX && mouseX < boxX + sizeX) 
+      		{
+      			if (mouseY > boxY && mouseY < boxY + sizeY) {
+      				List list = new ArrayList();
+      				list.add(tileEntity.waterLevel + " MB");
+      				this.drawHoveringText(list, (int) mouseX, (int) mouseY, fontRendererObj);
+      			}
+      			super.drawGuiContainerForegroundLayer(mouseX, mouseY);
+      		}
+      		
+      		// draw tooltip for slurry level
+      		boxX = guiWidth + 88;
+      		boxY = guiHeight + 16;
+      		sizeX = 15;
+      		sizeY = 57;
+
+      		if (mouseX > boxX && mouseX < boxX + sizeX) {
+      			if (mouseY > boxY && mouseY < boxY + sizeY) {
+      				List list = new ArrayList();
+      				list.add(tileEntity.slurryLevel + " MB");
+      				this.drawHoveringText(list, (int) mouseX, (int) mouseY, fontRendererObj);
+      			}
+      			super.drawGuiContainerForegroundLayer(mouseX, mouseY);
+      		}
     }
 }

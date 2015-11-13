@@ -10,6 +10,7 @@ tile.blockAlgaeSlurry.name=Algae Slurry
 tile.blockAlgae.name=Algae
 tile.blockATechOil.name=Oil
 tile.blockPhotobioreactor.name=Photobioreactor
+tile.blockPhotobioreactorController.name=Photobioreactor Controller
 tile.blockHydrothermalliquifactor.name=HydroThermalLiquifactor
 tile.blockHeatsink.name=Copper Heatsink
 tile.blockGrinder.name=Grinder

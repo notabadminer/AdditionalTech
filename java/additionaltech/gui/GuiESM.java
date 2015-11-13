@@ -61,29 +61,9 @@ public class GuiESM extends GuiContainer {
     	fontRendererObj.drawString(StatCollector.translateToLocal("Max Output"), 78, 68, 4210752);
     	fontRendererObj.drawString(Math.round(tileEntity.maxInput) + "", 98, 43, 4210752);
     	fontRendererObj.drawString(Math.round(tileEntity.maxOutput) + "", 98, 84, 4210752);
-    	
-    	//draw tooltip for energy level
-		int k = (this.width - this.xSize) / 2; // X asis on GUI
-		int l = (this.height - this.ySize) / 2; // Y asis on GUI
-		int boxX = k + 19;
-		int boxY = l + 24;
-		int sizeX = 15;
-		int sizeY = 70;
-		
-		if (mouseX > boxX && mouseX < boxX + sizeX) 
-		{
-			if (mouseY > boxY && mouseY < boxY + sizeY) {
-				//do something!!!!
-				List list = new ArrayList();
-				list.add(tileEntity.rfLevel + " RF");
-				//list.add(tileEntity.maxEnergy + " RF");
-				this.drawHoveringText(list, (int) mouseX - k, (int) mouseY - l, fontRendererObj);
-			}
-			super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-		}
     }
 
-    protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3) {
+    protected void drawGuiContainerBackgroundLayer(float par1, int mouseX, int mouseY) {
     	GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		
 		final ResourceLocation texture = new ResourceLocation("additionaltech", "textures/gui/esm.png");
@@ -95,6 +75,24 @@ public class GuiESM extends GuiContainer {
         
 		int energyLevel = (int) this.tileEntity.getEnergyLevelScaled(70);
         this.drawTexturedModalRect(guiWidth + 19, guiHeight + 94 - energyLevel, 176, 0, 15, energyLevel);
+        
+      //draw tooltip for energy level
+      		int boxX = guiWidth + 19;
+      		int boxY = guiHeight + 24;
+      		int sizeX = 15;
+      		int sizeY = 70;
+      		
+      		if (mouseX > boxX && mouseX < boxX + sizeX) 
+      		{
+      			if (mouseY > boxY && mouseY < boxY + sizeY) {
+      				//do something!!!!
+      				List list = new ArrayList();
+      				list.add(tileEntity.rfLevel + " RF");
+      				//list.add(tileEntity.maxEnergy + " RF");
+      				this.drawHoveringText(list, (int) mouseX, (int) mouseY, fontRendererObj);
+      			}
+      			super.drawGuiContainerForegroundLayer(mouseX, mouseY);
+      		}
     }
     
     protected void actionPerformed(GuiButton par1GuiButton) {

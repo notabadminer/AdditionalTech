@@ -31,49 +31,9 @@ public class GuiGrinder extends GuiContainer {
     	// draws "Inventory" or your regional equivalent
     	fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 6,
     					ySize - 96 + 2, 4210752);
-    	
-    	//draw tooltip for energy level
-		int k = (this.width - this.xSize) / 2; // X asis on GUI
-		int l = (this.height - this.ySize) / 2; // Y asis on GUI
-		int boxX = k + 7;
-		int boxY = l + 18;
-		int sizeX = tileEntity.batteryPresent() ? 8 : 17;
-		int sizeY = 80;
-		
-		if (mouseX > boxX && mouseX < boxX + sizeX) 
-		{
-			if (mouseY > boxY && mouseY < boxY + sizeY) {
-				//do something!!!!
-				List list = new ArrayList();
-				list.add(tileEntity.getEnergyLevel() + " RF");
-				this.drawHoveringText(list, (int) mouseX - k, (int) mouseY - l, fontRendererObj);
-			}
-			super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-		}
-		
-		if (tileEntity.batteryPresent()) {
-		//draw tooltip for battery level
-				k = (this.width - this.xSize) / 2; // X asis on GUI
-				l = (this.height - this.ySize) / 2; // Y asis on GUI
-				boxX = k + 16;
-				boxY = l + 18;
-				sizeX = 8;
-				sizeY = 80;
-				
-				if (mouseX > boxX && mouseX < boxX + sizeX) 
-				{
-					if (mouseY > boxY && mouseY < boxY + sizeY) {
-						//do something!!!!
-						List list = new ArrayList();
-						list.add("ESM: " + tileEntity.batteryLevel + " RF");
-						this.drawHoveringText(list, (int) mouseX - k, (int) mouseY - l, fontRendererObj);
-					}
-					super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-				}
-		}
     }
 
-    protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3) {
+    protected void drawGuiContainerBackgroundLayer(float par1, int mouseX, int mouseY) {
     	GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
     	
     	int cookingProgress;
@@ -102,5 +62,41 @@ public class GuiGrinder extends GuiContainer {
         	energyLevel = this.tileEntity.getEnergyLevelScaled(78);
         	this.drawTexturedModalRect(guiWidth + 8, guiHeight + 97 - energyLevel, 176, 17, 16, energyLevel);
         }
+
+    	//draw tooltip for energy level
+		int boxX = guiWidth + 7;
+		int boxY = guiHeight + 18;
+		int sizeX = tileEntity.batteryPresent() ? 8 : 17;
+		int sizeY = 80;
+		
+		if (mouseX > boxX && mouseX < boxX + sizeX) 
+		{
+			if (mouseY > boxY && mouseY < boxY + sizeY) {
+				//do something!!!!
+				List list = new ArrayList();
+				list.add(tileEntity.getEnergyLevel() + " RF");
+				this.drawHoveringText(list, (int) mouseX, (int) mouseY, fontRendererObj);
+			}
+			super.drawGuiContainerForegroundLayer(mouseX, mouseY);
+		}
+		
+		if (tileEntity.batteryPresent()) {
+		//draw tooltip for battery level
+				boxX = guiWidth + 16;
+				boxY = guiHeight + 18;
+				sizeX = 8;
+				sizeY = 80;
+				
+				if (mouseX > boxX && mouseX < boxX + sizeX) 
+				{
+					if (mouseY > boxY && mouseY < boxY + sizeY) {
+						//do something!!!!
+						List list = new ArrayList();
+						list.add("ESM: " + tileEntity.batteryLevel + " RF");
+						this.drawHoveringText(list, (int) mouseX, (int) mouseY, fontRendererObj);
+					}
+					super.drawGuiContainerForegroundLayer(mouseX, mouseY);
+				}
+		}
     }
 }

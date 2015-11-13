@@ -96,6 +96,7 @@ public class BlockESM extends BlockContainer {
 		TileEntity tentity = world.getTileEntity(x, y, z);
 		if (tentity instanceof TileESM) {
 			TileESM te = (TileESM) tentity;
+			
 			NBTTagList itemList = new NBTTagList();
 			NBTTagCompound tagCompound = new NBTTagCompound();
 			for (int i = 0; i < te.getSizeInventory(); i++) {

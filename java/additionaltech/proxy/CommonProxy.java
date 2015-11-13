@@ -12,6 +12,7 @@ import additionaltech.blocks.BlockHTL;
 import additionaltech.blocks.BlockHeatsink;
 import additionaltech.blocks.BlockOreCopper;
 import additionaltech.blocks.BlockPhotobioreactor;
+import additionaltech.blocks.BlockPhotobioreactorController;
 import additionaltech.blocks.BlockSolarInverter;
 import additionaltech.blocks.BlockSolarPanel;
 import additionaltech.items.ItemAlgae;
@@ -64,6 +65,7 @@ public class CommonProxy {
     public static Block blockESMIICore;
     public static Block blockESMIIICore;
     public static Block blockPhotobioreactor;
+    public static Block blockPhotobioreactorController;
     public static Block blockHydrothermalliquifactor;
     public static Block oreCopper;
     public static Block blockAlgaeSlurry;
@@ -108,6 +110,7 @@ public class CommonProxy {
     	blockESMIIICore = new BlockESMIIICore().setBlockName("blockESMIIICore");
     	blockGrinder = new BlockGrinder().setBlockName("blockGrinder");
     	blockPhotobioreactor = new BlockPhotobioreactor().setBlockName("blockPhotobioreactor");
+    	blockPhotobioreactorController = new BlockPhotobioreactorController().setBlockName("blockPhotobioreactorController");
     	blockHydrothermalliquifactor = new BlockHTL().setBlockName("blockHydrothermalliquifactor");
     	blockAlgae = new BlockAlgae().setBlockName("blockAlgae");
     	blockHeatsink = new BlockHeatsink().setBlockName("blockHeatsink");
@@ -121,6 +124,7 @@ public class CommonProxy {
     	GameRegistry.registerBlock(blockESMIIICore, blockESMIIICore.getUnlocalizedName());
     	GameRegistry.registerBlock(blockGrinder, blockGrinder.getUnlocalizedName());
     	GameRegistry.registerBlock(blockPhotobioreactor, blockPhotobioreactor.getUnlocalizedName());
+    	GameRegistry.registerBlock(blockPhotobioreactorController, blockPhotobioreactorController.getUnlocalizedName());
     	GameRegistry.registerBlock(blockHydrothermalliquifactor, blockHydrothermalliquifactor.getUnlocalizedName());
     	GameRegistry.registerBlock(blockAlgae, blockAlgae.getUnlocalizedName());
     	GameRegistry.registerBlock(blockHeatsink, blockHeatsink.getUnlocalizedName());

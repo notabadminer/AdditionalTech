@@ -29,10 +29,10 @@ public class BlockAlgae extends BlockBush {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIcon(int side, int meta){
+	public IIcon getIcon(int side, int meta) {
 		return blockIcon;
 	}
-	
+
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(IIconRegister par1IconRegister) {
@@ -42,11 +42,11 @@ public class BlockAlgae extends BlockBush {
 	public boolean isOpaqueCube() {
 		return false;
 	}
-	
+
 	@Override
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
-        return null;
-    }
+		return null;
+	}
 
 	@Override
 	public void updateTick(World world, int x, int y, int z, Random random) {
@@ -60,32 +60,28 @@ public class BlockAlgae extends BlockBush {
 			rInt = random.nextInt(4);
 			switch (rInt) {
 			case 1:
-				if (world.getBlock(x + 1, y - 1, z) == Blocks.water
-						&& world.getBlock(x + 1, y, z) == Blocks.air 
+				if (world.getBlock(x + 1, y - 1, z) == Blocks.water && world.getBlock(x + 1, y, z) == Blocks.air
 						&& world.getBlock(x + 1, y - 2, z) != Blocks.water) {
 					world.setBlock(x + 1, y, z, AdditionalTech.proxy.blockAlgae, 0, 3);
 					world.setBlockMetadataWithNotify(x, y, z, 0, 2);
 					return;
 				}
 			case 2:
-				if (world.getBlock(x - 1, y - 1, z) == Blocks.water
-						&& world.getBlock(x - 1, y, z) == Blocks.air
+				if (world.getBlock(x - 1, y - 1, z) == Blocks.water && world.getBlock(x - 1, y, z) == Blocks.air
 						&& world.getBlock(x - 1, y - 2, z) != Blocks.water) {
 					world.setBlock(x - 1, y, z, AdditionalTech.proxy.blockAlgae, 0, 3);
 					world.setBlockMetadataWithNotify(x, y, z, 0, 2);
 					return;
 				}
 			case 3:
-				if (world.getBlock(x, y - 1, z + 1) == Blocks.water
-						&& world.getBlock(x, y, z + 1) == Blocks.air
+				if (world.getBlock(x, y - 1, z + 1) == Blocks.water && world.getBlock(x, y, z + 1) == Blocks.air
 						&& world.getBlock(x, y - 2, z + 1) != Blocks.water) {
 					world.setBlock(x, y, z + 1, AdditionalTech.proxy.blockAlgae, 0, 3);
 					world.setBlockMetadataWithNotify(x, y, z, 0, 2);
 					return;
 				}
 			case 4:
-				if (world.getBlock(x, y - 1, z - 1) == Blocks.water
-						&& world.getBlock(x, y, z - 1) == Blocks.air
+				if (world.getBlock(x, y - 1, z - 1) == Blocks.water && world.getBlock(x, y, z - 1) == Blocks.air
 						&& world.getBlock(x + 1, y - 2, z - 1) != Blocks.water) {
 					world.setBlock(x, y, z - 1, AdditionalTech.proxy.blockAlgae, 0, 3);
 					world.setBlockMetadataWithNotify(x, y, z, 0, 2);
@@ -94,39 +90,35 @@ public class BlockAlgae extends BlockBush {
 			default:
 				return;
 			}
-		}
-		else
+		} else
 			world.setBlockMetadataWithNotify(x, y, z, blockMeta + 1, 2);
 	}
-	
+
 	@Override
-	 protected boolean canPlaceBlockOn(Block parBlock)
-	    {
-	        return parBlock == Blocks.water;
-	    }
-	
-	public boolean canBlockStay(World par1World, int par2, int par3, int par4)
-    {
-		if (par1World.getBlock(par2, par3-1, par4) == Blocks.water) {
+	protected boolean canPlaceBlockOn(Block parBlock) {
+		return parBlock == Blocks.water;
+	}
+
+	public boolean canBlockStay(World par1World, int par2, int par3, int par4) {
+		if (par1World.getBlock(par2, par3 - 1, par4) == Blocks.water
+				&& par1World.getBlock(par2, par3 - 2, par4) != Blocks.water) {
 			return true;
 		}
 		return false;
-    }
-	
+	}
+
 	@Override
-    public EnumPlantType getPlantType(IBlockAccess world, int x, int y, int z)
-    {
-        return EnumPlantType.Water;
-    }
-	
+	public EnumPlantType getPlantType(IBlockAccess world, int x, int y, int z) {
+		return EnumPlantType.Water;
+	}
+
 	public int getRenderType() {
-        return 0; // Magic number.
-    }
-	
+		return 0; // Magic number.
+	}
+
 	@Override
-	 public Item getItemDropped(int p_149650_1_, Random p_149650_2_, int p_149650_3_)
-	    {
-	        return AdditionalTech.proxy.itemAlgae;
-	    }
+	public Item getItemDropped(int p_149650_1_, Random p_149650_2_, int p_149650_3_) {
+		return AdditionalTech.proxy.itemAlgae;
+	}
 
 }

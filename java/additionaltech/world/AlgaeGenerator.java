@@ -18,6 +18,7 @@ public class AlgaeGenerator implements IWorldGenerator {
 		int z = chunkZ * 16;
 		String biomeName = world.getBiomeGenForCoords(x, z).biomeName;
 		if(biomeName.contentEquals("Swampland")) {
+			//FMLLog.info("swamp at " + x + " " + z);
 			for (int i = 0; i < spawnRate; ++i) {
 				int xGen = x + random.nextInt(16);
 				int zGen = z + random.nextInt(16);

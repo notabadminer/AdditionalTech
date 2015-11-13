@@ -293,7 +293,7 @@ public class TileHTL extends TileEntity implements IEnergyReceiver, IInventory, 
 
 	@Override
 	public String getInventoryName() {
-		return "Photobioreactor";
+		return "HydroThermalLiquifactor";
 	}
 
 	@Override
@@ -332,7 +332,7 @@ public class TileHTL extends TileEntity implements IEnergyReceiver, IInventory, 
 	}
 	
 	public void onButtonPressed(int button) {
-		if (button == 0) {
+		if (button == 0 && slurryLevel > 1000) {
 			isActive = true;
 		}
 	}

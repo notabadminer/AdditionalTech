@@ -45,130 +45,10 @@ public class GuiHTL extends GuiContainer {
 		fontRendererObj.drawString(
 				StatCollector.translateToLocal("container.inventory"), 6,
 				ySize - 96 + 2, 4210752);
-
-		// draw tooltip for energy level
-		int k = (this.width - this.xSize) / 2; // X asis on GUI
-		int l = (this.height - this.ySize) / 2; // Y asis on GUI
-		int boxX = k + 8;
-		int boxY = l + 20;
-		int sizeX = tileEntity.batteryPresent() ? 8 : 17;
-		int sizeY = 80;
-
-		if (mouseX > boxX && mouseX < boxX + sizeX) {
-			if (mouseY > boxY && mouseY < boxY + sizeY) {
-				// do something!!!!
-				List list = new ArrayList();
-				list.add(tileEntity.getEnergyLevel() + " RF");
-				this.drawHoveringText(list, (int) mouseX - k, (int) mouseY - l,
-						fontRendererObj);
-			}
-			super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-		}
-
-		if (tileEntity.batteryPresent()) {
-			// draw tooltip for battery level
-			k = (this.width - this.xSize) / 2; // X asis on GUI
-			l = (this.height - this.ySize) / 2; // Y asis on GUI
-			boxX = k + 18;
-			boxY = l + 20;
-			sizeX = 8;
-			sizeY = 80;
-
-			if (mouseX > boxX && mouseX < boxX + sizeX) {
-				if (mouseY > boxY && mouseY < boxY + sizeY) {
-					// do something!!!!
-					List list = new ArrayList();
-					list.add("ESM: " + tileEntity.batteryLevel + " RF");
-					this.drawHoveringText(list, (int) mouseX - k, (int) mouseY
-							- l, fontRendererObj);
-				}
-				super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-			}
-		}
-		
-		// draw tooltip for temp
-		k = (this.width - this.xSize) / 2; // X asis on GUI
-		l = (this.height - this.ySize) / 2; // Y asis on GUI
-		boxX = k + 62;
-		boxY = l + 24;
-		sizeX = 8;
-		sizeY = 39;
-
-		if (mouseX > boxX && mouseX < boxX + sizeX) {
-			if (mouseY > boxY && mouseY < boxY + sizeY) {
-				// do something!!!!
-				List list = new ArrayList();
-				list.add("Temp");
-				list.add(tileEntity.temp + " F");
-				this.drawHoveringText(list, (int) mouseX - k, (int) mouseY - l,
-						fontRendererObj);
-			}
-			super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-		}
-
-		// draw tooltip for pressure
-		k = (this.width - this.xSize) / 2; // X asis on GUI
-		l = (this.height - this.ySize) / 2; // Y asis on GUI
-		boxX = k + 75;
-		boxY = l + 24;
-		sizeX = 8;
-		sizeY = 39;
-
-		if (mouseX > boxX && mouseX < boxX + sizeX) {
-			if (mouseY > boxY && mouseY < boxY + sizeY) {
-				// do something!!!!
-				List list = new ArrayList();
-				list.add("Pressure");
-				list.add(tileEntity.pressure + " PSI");
-				this.drawHoveringText(list, (int) mouseX - k, (int) mouseY - l,
-						fontRendererObj);
-			}
-			super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-		}
-
-		// draw tooltip for slurry level
-		k = (this.width - this.xSize) / 2; // X asis on GUI
-		l = (this.height - this.ySize) / 2; // Y asis on GUI
-		boxX = k + 100;
-		boxY = l + 24;
-		sizeX = 7;
-		sizeY = 70;
-
-		if (mouseX > boxX && mouseX < boxX + sizeX) {
-			if (mouseY > boxY && mouseY < boxY + sizeY) {
-				// do something!!!!
-				List list = new ArrayList();
-				list.add("Algae");
-				list.add(tileEntity.slurryLevel + " MB");
-				this.drawHoveringText(list, (int) mouseX - k, (int) mouseY - l,
-						fontRendererObj);
-			}
-			super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-		}
-
-		// draw tooltip for oil level
-		k = (this.width - this.xSize) / 2; // X asis on GUI
-		l = (this.height - this.ySize) / 2; // Y asis on GUI
-		boxX = k + 115;
-		boxY = l + 24;
-		sizeX = 7;
-		sizeY = 70;
-
-		if (mouseX > boxX && mouseX < boxX + sizeX) {
-			if (mouseY > boxY && mouseY < boxY + sizeY) {
-				// do something!!!!
-				List list = new ArrayList();
-				list.add("Oil");
-				list.add(tileEntity.oilLevel + " MB");
-				this.drawHoveringText(list, (int) mouseX - k, (int) mouseY - l,
-						fontRendererObj);
-			}
-			super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-		}
 	}
 
-	protected void drawGuiContainerBackgroundLayer(float par1, int par2,
-			int par3) {
+	protected void drawGuiContainerBackgroundLayer(float par1, int mouseX,
+			int mouseY) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
 		int cookingProgress;
@@ -218,6 +98,113 @@ public class GuiHTL extends GuiContainer {
 			this.drawTexturedModalRect(guiWidth + 10, guiHeight + 99
 					- energyLevel, 176, 0, 15, energyLevel);
 		}
+		
+		// draw tooltip for energy level
+				int boxX = guiWidth + 8;
+				int boxY = guiHeight + 20;
+				int sizeX = tileEntity.batteryPresent() ? 8 : 17;
+				int sizeY = 80;
+
+				if (mouseX > boxX && mouseX < boxX + sizeX) {
+					if (mouseY > boxY && mouseY < boxY + sizeY) {
+						// do something!!!!
+						List list = new ArrayList();
+						list.add(tileEntity.getEnergyLevel() + " RF");
+						this.drawHoveringText(list, (int) mouseX, (int) mouseY,
+								fontRendererObj);
+					}
+					super.drawGuiContainerForegroundLayer(mouseX, mouseY);
+				}
+
+				if (tileEntity.batteryPresent()) {
+					// draw tooltip for battery level
+					boxX = guiWidth + 18;
+					boxY = guiHeight + 20;
+					sizeX = 8;
+					sizeY = 80;
+
+					if (mouseX > boxX && mouseX < boxX + sizeX) {
+						if (mouseY > boxY && mouseY < boxY + sizeY) {
+							// do something!!!!
+							List list = new ArrayList();
+							list.add("ESM: " + tileEntity.batteryLevel + " RF");
+							this.drawHoveringText(list, (int) mouseX, (int) mouseY, fontRendererObj);
+						}
+						super.drawGuiContainerForegroundLayer(mouseX, mouseY);
+					}
+				}
+				
+				// draw tooltip for temp
+				boxX = guiWidth + 62;
+				boxY = guiHeight + 24;
+				sizeX = 8;
+				sizeY = 39;
+
+				if (mouseX > boxX && mouseX < boxX + sizeX) {
+					if (mouseY > boxY && mouseY < boxY + sizeY) {
+						// do something!!!!
+						List list = new ArrayList();
+						list.add("Temp");
+						list.add(tileEntity.temp + " F");
+						this.drawHoveringText(list, (int) mouseX, (int) mouseY,
+								fontRendererObj);
+					}
+					super.drawGuiContainerForegroundLayer(mouseX, mouseY);
+				}
+
+				// draw tooltip for pressure
+				boxX = guiWidth + 75;
+				boxY = guiHeight + 24;
+				sizeX = 8;
+				sizeY = 39;
+
+				if (mouseX > boxX && mouseX < boxX + sizeX) {
+					if (mouseY > boxY && mouseY < boxY + sizeY) {
+						// do something!!!!
+						List list = new ArrayList();
+						list.add("Pressure");
+						list.add(tileEntity.pressure + " PSI");
+						this.drawHoveringText(list, (int) mouseX, (int) mouseY,
+								fontRendererObj);
+					}
+					super.drawGuiContainerForegroundLayer(mouseX, mouseY);
+				}
+
+				// draw tooltip for slurry level
+				boxX = guiWidth + 100;
+				boxY = guiHeight + 24;
+				sizeX = 7;
+				sizeY = 70;
+
+				if (mouseX > boxX && mouseX < boxX + sizeX) {
+					if (mouseY > boxY && mouseY < boxY + sizeY) {
+						// do something!!!!
+						List list = new ArrayList();
+						list.add("Algae");
+						list.add(tileEntity.slurryLevel + " MB");
+						this.drawHoveringText(list, (int) mouseX, (int) mouseY,
+								fontRendererObj);
+					}
+					super.drawGuiContainerForegroundLayer(mouseX, mouseY);
+				}
+
+				// draw tooltip for oil level
+				boxX = guiWidth + 115;
+				boxY = guiHeight + 24;
+				sizeX = 7;
+				sizeY = 70;
+
+				if (mouseX > boxX && mouseX < boxX + sizeX) {
+					if (mouseY > boxY && mouseY < boxY + sizeY) {
+						// do something!!!!
+						List list = new ArrayList();
+						list.add("Oil");
+						list.add(tileEntity.oilLevel + " MB");
+						this.drawHoveringText(list, (int) mouseX, (int) mouseY,
+								fontRendererObj);
+					}
+					super.drawGuiContainerForegroundLayer(mouseX, mouseY);
+				}
 	}
 	
 	protected void actionPerformed(GuiButton par1GuiButton) {
